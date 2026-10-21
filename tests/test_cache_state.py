@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gala_sim.timing.modules import CacheBackpressure, CacheLookup, SemanticCacheState
+from cover_sim.timing.modules import CacheBackpressure, CacheLookup, SemanticCacheState
 
 
 def test_semantic_cache_tracks_miss_merge_multicast_and_release() -> None:

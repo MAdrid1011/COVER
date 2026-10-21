@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.tools.fact_gs_training_probe import (
+from cover_sim.tools.fact_gs_training_probe import (
     BACKWARD_PATHS,
     COMPILER_VARIANTS,
     FactTrainingProbeError,
@@ -16,7 +16,7 @@ from gala_sim.tools.fact_gs_training_probe import (
     run_matrix,
     summarize_matrix,
 )
-from gala_sim.gpu_measurement import load_gpu_compiler_measurement
+from cover_sim.gpu_measurement import load_gpu_compiler_measurement
 
 
 def _observation(variant: str, elapsed_ms: float, value: float = 1.0) -> ProbeObservation:
@@ -52,9 +52,9 @@ def test_compiler_variants_independently_select_the_two_official_paths() -> None
 def test_semantic_hot_fraction_override_is_scoped_and_validated(monkeypatch) -> None:
     selection = BACKWARD_PATHS["0100"]
     assert _semantic_hot_fraction(selection) == pytest.approx(0.40)
-    monkeypatch.setenv("GALA_FACT_SEMANTIC_HOT_FRACTION", "0.25")
+    monkeypatch.setenv("COVER_FACT_SEMANTIC_HOT_FRACTION", "0.25")
     assert _semantic_hot_fraction(selection) == pytest.approx(0.25)
-    monkeypatch.setenv("GALA_FACT_SEMANTIC_HOT_FRACTION", "1.5")
+    monkeypatch.setenv("COVER_FACT_SEMANTIC_HOT_FRACTION", "1.5")
     with pytest.raises(FactTrainingProbeError, match=r"in \(0, 1\]"):
         _semantic_hot_fraction(selection)
     assert _semantic_hot_fraction(BACKWARD_PATHS["1000"]) is None
@@ -115,7 +115,7 @@ def test_matrix_rejects_numerically_changed_variant() -> None:
 def test_matrix_writes_campaign_measurement_with_dataset_identity(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.fact_gs_training_probe as probe
+    import cover_sim.tools.fact_gs_training_probe as probe
 
     def fake_probe(**kwargs):
         variant = kwargs["compiler_variant"]
@@ -169,7 +169,7 @@ def test_matrix_writes_campaign_measurement_with_dataset_identity(
 def test_fact_matrix_keeps_stage_profile_out_of_four_way_timing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.fact_gs_training_probe as probe
+    import cover_sim.tools.fact_gs_training_probe as probe
 
     calls: list[tuple[str, bool]] = []
 

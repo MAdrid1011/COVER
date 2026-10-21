@@ -4,12 +4,12 @@ from dataclasses import replace
 
 import numpy as np
 
-from gala_sim.clamp import ReductionDomain, TaskKind, TaskPacket
-from gala_sim.clamp.builder import TraceBuilder
-from gala_sim.clamp.events import PrimitiveKind, TraceEvent
-from gala_sim.timing import CycleConfig, CycleConfigurationError, CycleEngine, ModuleTiming
-from gala_sim.timing.engine import _DependencyIndex
-from gala_sim.timing.oracle import FutureTracePlan
+from cover_sim.clamp import ReductionDomain, TaskKind, TaskPacket
+from cover_sim.clamp.builder import TraceBuilder
+from cover_sim.clamp.events import PrimitiveKind, TraceEvent
+from cover_sim.timing import CycleConfig, CycleConfigurationError, CycleEngine, ModuleTiming
+from cover_sim.timing.engine import _DependencyIndex
+from cover_sim.timing.oracle import FutureTracePlan
 
 
 class _Memory:

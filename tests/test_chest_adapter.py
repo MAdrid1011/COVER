@@ -6,12 +6,12 @@ import sys
 
 import numpy as np
 
-from gala_sim.adapters import load_chest_manifest
-from gala_sim.adapters.r2_gaussian import R2GaussianChestAdapter, _bind_trace_identity
-from gala_sim.config import load_config
-from gala_sim.clamp import PrimitiveKind, TraceBuilder, TraceEvent
-from gala_sim.identity import sha256_tree
-from gala_sim.trace import TraceWriter
+from cover_sim.adapters import load_chest_manifest
+from cover_sim.adapters.r2_gaussian import R2GaussianChestAdapter, _bind_trace_identity
+from cover_sim.config import load_config
+from cover_sim.clamp import PrimitiveKind, TraceBuilder, TraceEvent
+from cover_sim.identity import sha256_tree
+from cover_sim.trace import TraceWriter
 
 
 def test_chest_manifest_preserves_official_projection_references(tmp_path: Path) -> None:
@@ -40,7 +40,7 @@ def test_r2_adapter_preserves_frozen_python_interpreter(tmp_path: Path) -> None:
     adapter = R2GaussianChestAdapter(
         source, tmp_path, tmp_path / "output", "a" * 40, Path(sys.executable),
     )
-    config = load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml")
+    config = load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml")
     run = adapter.prepare(None, config)
     assert run.official_command[0] == str(Path(sys.executable).resolve())
 
@@ -56,7 +56,7 @@ def test_trace_identity_is_bound_before_cycle_handoff(tmp_path: Path) -> None:
     adapter = R2GaussianChestAdapter(
         source, run_dataset, tmp_path / "output", "b" * 40, Path(sys.executable),
     )
-    run = adapter.prepare(None, load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml"))
+    run = adapter.prepare(None, load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml"))
     bound = _bind_trace_identity(trace, run, adapter.model_commit, "c" * 40)
     root = tmp_path / "trace"
     TraceWriter().write(bound, root)

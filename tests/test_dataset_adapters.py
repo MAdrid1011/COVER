@@ -7,8 +7,8 @@ import struct
 
 import numpy as np
 
-from gala_sim.adapters import get_dataset_adapter
-from gala_sim.adapters import datasets as dataset_module
+from cover_sim.adapters import get_dataset_adapter
+from cover_sim.adapters import datasets as dataset_module
 
 
 class _FakeOLE:
@@ -216,7 +216,7 @@ def test_prepared_dataset_manifest_reloads_without_discovering_auxiliary_arrays(
     assert upstream["scanner"]["mode"] == "cone"
     assert upstream["reference_volume_available"] is False
     sentinel = converted.root / upstream["vol"]
-    assert sentinel.name == ".gala_no_ground_truth.npy"
+    assert sentinel.name == ".cover_no_ground_truth.npy"
     assert np.load(sentinel).shape == (1, 1, 1)
     assert converted.initialization is not None
     initialization = np.load(converted.initialization, mmap_mode="r")

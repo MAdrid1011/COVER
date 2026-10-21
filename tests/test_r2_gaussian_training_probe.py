@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.tools.r2_gaussian_training_probe import (
+from cover_sim.tools.r2_gaussian_training_probe import (
     COMPILER_VARIANT_FLAGS,
     OVERLAY_TRANSFORMS,
     TrainingProbeError,
@@ -61,13 +61,13 @@ def test_gpu_summary_preserves_raw_samples() -> None:
 def test_compiler_variant_environment_sets_independent_mechanisms(
     monkeypatch: pytest.MonkeyPatch, variant: str, query: str, semantic: str,
 ) -> None:
-    monkeypatch.setenv("GALA_QUERY_WARP_REDUCE", "previous-query")
-    monkeypatch.setenv("GALA_SEMANTIC_WARP_REDUCE", "previous-semantic")
+    monkeypatch.setenv("COVER_QUERY_WARP_REDUCE", "previous-query")
+    monkeypatch.setenv("COVER_SEMANTIC_WARP_REDUCE", "previous-semantic")
     with _compiler_variant_environment(variant):
-        assert os.environ["GALA_QUERY_WARP_REDUCE"] == query
-        assert os.environ["GALA_SEMANTIC_WARP_REDUCE"] == semantic
-    assert os.environ["GALA_QUERY_WARP_REDUCE"] == "previous-query"
-    assert os.environ["GALA_SEMANTIC_WARP_REDUCE"] == "previous-semantic"
+        assert os.environ["COVER_QUERY_WARP_REDUCE"] == query
+        assert os.environ["COVER_SEMANTIC_WARP_REDUCE"] == semantic
+    assert os.environ["COVER_QUERY_WARP_REDUCE"] == "previous-query"
+    assert os.environ["COVER_SEMANTIC_WARP_REDUCE"] == "previous-semantic"
 
 
 def test_compiler_variants_all_use_gpu_base_comparison() -> None:

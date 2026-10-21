@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.workspace import WorkspacePaths
 
 
 def _repository(root: Path) -> Path:
@@ -26,7 +26,7 @@ def test_workspace_precedence_and_directory_creation(
     repository = _repository(tmp_path / "repo")
     environment_root = tmp_path / "environment-workspace"
     explicit_root = tmp_path / "explicit-workspace"
-    monkeypatch.setenv("GALA_WORKSPACE", str(environment_root))
+    monkeypatch.setenv("COVER_WORKSPACE", str(environment_root))
     assert WorkspacePaths.discover(repository=repository).root == environment_root.resolve()
     paths = WorkspacePaths.discover(repository=repository, workspace=explicit_root)
     assert paths.root == explicit_root.resolve()

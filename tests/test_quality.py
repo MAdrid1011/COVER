@@ -6,11 +6,11 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from gala_sim.adapters.protocol import PreparedRun
-from gala_sim.adapters.r2_gaussian import _read_metrics
-from gala_sim.config import GalaConfig, load_config
-from gala_sim.metrics import QualityConfig, QualityMetrics
-from gala_sim.metrics.quality import _check_volumes, _normalize_lpips_slice
+from cover_sim.adapters.protocol import PreparedRun
+from cover_sim.adapters.r2_gaussian import _read_metrics
+from cover_sim.config import CoverConfig, load_config
+from cover_sim.metrics import QualityConfig, QualityMetrics
+from cover_sim.metrics.quality import _check_volumes, _normalize_lpips_slice
 
 
 def _parameter(value, unit: str = "scalar") -> dict[str, object]:
@@ -25,8 +25,8 @@ def _parameter(value, unit: str = "scalar") -> dict[str, object]:
 
 def test_quality_config_loads_frozen_chest_protocol() -> None:
     root = Path(__file__).resolve().parents[1]
-    config = load_config(root / "configs/architecture/gala.yaml")
-    quality = QualityConfig.from_gala(config)
+    config = load_config(root / "configs/architecture/cover.yaml")
+    quality = QualityConfig.from_cover(config)
     assert quality.data_min == 0.0
     assert quality.data_max == 1.0
     assert quality.ssim_window == 11
@@ -41,7 +41,7 @@ def test_quality_config_loads_frozen_chest_protocol() -> None:
 
 
 def test_quality_config_loads_frozen_orthogonal_slice_lists() -> None:
-    config = GalaConfig(
+    config = CoverConfig(
         Path("quality.yaml"),
         {"quality": {
             "data_min": _parameter(0.0),
@@ -58,7 +58,7 @@ def test_quality_config_loads_frozen_orthogonal_slice_lists() -> None:
         "a" * 64,
         True,
     )
-    quality = QualityConfig.from_gala(config)
+    quality = QualityConfig.from_cover(config)
     assert quality.lpips_slices == ((4, 8), (5,), (6, 9))
     assert quality.lpips_network == "alex"
     assert quality.lpips_version == "fixture-version"
@@ -117,15 +117,15 @@ def test_r2_reference_metrics_include_unified_and_official_values(
         quality_config, 0, ("python", "train.py"), tmp_path / "output",
     )
     monkeypatch.setattr(
-        "gala_sim.adapters.r2_gaussian.load_chest_manifest",
+        "cover_sim.adapters.r2_gaussian.load_chest_manifest",
         lambda _root: SimpleNamespace(volume_path=reference_path),
     )
     monkeypatch.setattr(
-        "gala_sim.adapters.r2_gaussian.measure_quality",
+        "cover_sim.adapters.r2_gaussian.measure_quality",
         lambda _reference, _candidate, _config: QualityMetrics(20.0, 0.8, 0.1),
     )
     monkeypatch.setattr(
-        "gala_sim.adapters.r2_gaussian._read_latest_metrics",
+        "cover_sim.adapters.r2_gaussian._read_latest_metrics",
         lambda _root: {"psnr_3d": 19.0, "ssim_3d": 0.7},
     )
     assert _read_metrics(run, candidate_path, tmp_path) == {

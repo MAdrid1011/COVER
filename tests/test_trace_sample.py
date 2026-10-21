@@ -6,13 +6,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.clamp import PrimitiveKind, ResourceClass, TraceBuilder, TraceEvent
-from gala_sim.trace import (
+from cover_sim.clamp import PrimitiveKind, ResourceClass, TraceBuilder, TraceEvent
+from cover_sim.trace import (
     QueryPacketSampleConfig, QueryRange, TraceReader, TraceSampleConfig, TraceWriter,
     dependency_closed_query_sample, real_query_packet_sample, validate_trace,
 )
-from gala_sim.trace.sample import _gather_value_batches
-from gala_sim.cli import main
+from cover_sim.trace.sample import _gather_value_batches
+from cover_sim.cli import main
 
 
 def _two_query_trace():
@@ -70,7 +70,7 @@ def _two_query_trace():
     return builder.finish(metadata={
         "initial_gaussian_count": 2,
         "trace_chunk_events": 4,
-        "capture_audit_schema_version": "gala-r2-capture-audit-v4",
+        "capture_audit_schema_version": "cover-r2-capture-audit-v4",
         "capture_audit": {},
     })
 
@@ -273,7 +273,7 @@ def test_cli_writes_sample_and_cycle_cli_rejects_implicit_formal_use(
 
     assert main([
         "cycle-replay", "--trace", str(output),
-        "--config", "configs/architecture/gala.yaml",
+        "--config", "configs/architecture/cover.yaml",
         "--resource-usage", str(tmp_path / "missing.json"),
         "--output", str(tmp_path / "run"),
     ]) == 2

@@ -5,13 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.ablation import (
+from cover_sim.ablation import (
     AblationVariant,
     all_variants,
     composition_assessment,
     validate_matrix,
 )
-from gala_sim.results import (
+from cover_sim.results import (
     AblationRow, asic_speedup, comparison_baseline, gpu_speedup,
     write_ablation_csv,
 )

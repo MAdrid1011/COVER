@@ -6,12 +6,12 @@ import sys
 
 import pytest
 
-from gala_sim.config import GalaConfig, load_config
-from gala_sim.timing.memory import Ramulator2Backend
-from gala_sim.timing.resources import ResourceUsage
-from gala_sim.tools.cycle_preflight import run_cycle_preflight, write_cycle_preflight
-from gala_sim.identity import canonical_json, sha256_bytes
-from gala_sim.tools.preflight import (
+from cover_sim.config import CoverConfig, load_config
+from cover_sim.timing.memory import Ramulator2Backend
+from cover_sim.timing.resources import ResourceUsage
+from cover_sim.tools.cycle_preflight import run_cycle_preflight, write_cycle_preflight
+from cover_sim.identity import canonical_json, sha256_bytes
+from cover_sim.tools.preflight import (
     ComputeProcess,
     GpuSample,
     decide_long_run,
@@ -59,7 +59,7 @@ def test_gpustat_sample_distinguishes_compute_processes(monkeypatch) -> None:
     def check_output(command, **_kwargs):
         return gpustat if command[0] == "gpustat" else compute
 
-    monkeypatch.setattr("gala_sim.tools.preflight.subprocess.check_output", check_output)
+    monkeypatch.setattr("cover_sim.tools.preflight.subprocess.check_output", check_output)
     sample = sample_gpustat()
     assert sample.utilization_percent == 97.0
     assert sample.compute_processes == (
@@ -68,14 +68,14 @@ def test_gpustat_sample_distinguishes_compute_processes(monkeypatch) -> None:
     assert sample.memory_total_bytes == 4096 * 1024 * 1024
 
 
-def _freeze(config: GalaConfig, root: Path, script: Path) -> dict[str, object]:
+def _freeze(config: CoverConfig, root: Path, script: Path) -> dict[str, object]:
     command = {
         "working_directory": str(root),
         "argv": [str(Path(sys.executable).resolve()), script.name, "-s", str(root / "data"),
                  "-m", str(root / "formal")],
     }
     value: dict[str, object] = {
-        "schema_version": "gala-input-freeze-v3",
+        "schema_version": "cover-input-freeze-v3",
         "config": {"sha256": config.sha256},
         "repository": {"commit": "a" * 40},
         "training": {
@@ -88,7 +88,7 @@ def _freeze(config: GalaConfig, root: Path, script: Path) -> dict[str, object]:
 
 
 def test_native_preflight_rejects_external_compute_before_launch(tmp_path: Path) -> None:
-    config = load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml")
+    config = load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml")
     script = tmp_path / "train.py"
     script.write_text("raise AssertionError('must not launch')\n", encoding="utf-8")
     busy = GpuSample(
@@ -108,7 +108,7 @@ def test_native_preflight_rejects_external_compute_before_launch(tmp_path: Path)
 
 
 def test_native_preflight_predicts_from_isolated_short_run(tmp_path: Path) -> None:
-    config = load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml")
+    config = load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml")
     script = tmp_path / "train.py"
     script.write_text("pass\n", encoding="utf-8")
     free = GpuSample(1.0, 80.0, 1024, None, None, None, None, 0, "GPU-fixture", ())
@@ -162,7 +162,7 @@ class _RamulatorBinding:
         return type(self)()
 
 
-def _ready_config() -> GalaConfig:
+def _ready_config() -> CoverConfig:
     metadata = lambda value, unit: {
         "value": value, "unit": unit, "source": "fixture", "scope": "hardware",
         "status": "frozen",
@@ -187,13 +187,13 @@ def _ready_config() -> GalaConfig:
         },
         "cache": {"sector_bytes": metadata(64, "byte")},
     }
-    return GalaConfig(Path("fixture.yaml"), parameters, "a" * 64, True)
+    return CoverConfig(Path("fixture.yaml"), parameters, "a" * 64, True)
 
 
 def test_cycle_preflight_records_all_formal_blockers(tmp_path: Path) -> None:
-    config = load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml")
+    config = load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml")
     report = run_cycle_preflight(
-        config, reproduction="gala-sim cycle-preflight --config configs/architecture/gala.yaml",
+        config, reproduction="cover-sim cycle-preflight --config configs/architecture/cover.yaml",
     )
     assert report.status == "failed_preflight"
     assert report.pending == ()

@@ -13,7 +13,7 @@ consume the corresponding metadata.
 | C | `architecture.overlap_guided_issue` | Use historical overlap prediction and conflict-free fused issue | Issue one legal task per cycle in arrival order |
 | D | `architecture.semantic_residency` | Enable the semantic directory, residency, miss merging, and scope multicast | Serve every state request through the base memory path |
 
-Bits use `ABCD` order. `0000` is Base ASIC and `1111` is full GALA. Disabling a
+Bits use `ABCD` order. `0000` is Base ASIC and `1111` is full COVER. Disabling a
 control removes only that optimization; it may not remove tasks, dependencies,
 queues, numerical work, or hardware state required for correctness.
 
@@ -32,7 +32,7 @@ One validated trace is replayed in this fixed order:
 | `0100` | Compiler B only |
 | `0101` | Compiler B with hardware D |
 | `1100` | Compiler A and B together |
-| `1111` | Full GALA |
+| `1111` | Full COVER |
 
 Every row uses the same hardware resources, memory mapping, input events, and
 numerical semantics. The runner rejects missing, duplicate, reordered, and
@@ -43,7 +43,7 @@ resource-closure checks.
 The query-scheduling closure point is `1010`, semantic-residency closure is
 `0101`, and the joint compiler point is `1100`. Variants `1000`, `0100`, and
 `1100` enable neither C nor D and must not be described as standalone hardware
-experiments without their compiler prerequisites. Full-entry GALA cycles must
+experiments without their compiler prerequisites. Full-entry COVER cycles must
 exactly match the `1111` row.
 
 ## 3. Speedup Baselines
@@ -95,7 +95,7 @@ tables may not be filled manually.
 
 ## 5. Consistency Assertions
 
-- `1111` end-to-end cycles equal the full GALA entry-point result.
+- `1111` end-to-end cycles equal the full COVER entry-point result.
 - All seven variants have identical dynamic valid-relation, numerical-task, and
   update-commit counts.
 - The variant set and order are exactly

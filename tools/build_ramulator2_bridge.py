@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the GALA C ABI bridge against a verified Ramulator 2 checkout."""
+"""Build the COVER C ABI bridge against a verified Ramulator 2 checkout."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import sys
 REPOSITORY = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY))
 
-from gala_sim.identity import sha256_file
+from cover_sim.identity import sha256_file
 
 
 def _git(root: Path, *arguments: str) -> str:
@@ -50,7 +50,7 @@ def main(argv: list[str] | None = None) -> int:
         output.parent.mkdir(parents=True, exist_ok=True)
         command = [
             args.compiler, "-std=c++20", "-O2", "-fPIC", "-shared",
-            f"-DGALA_RAMULATOR_VERSION=\"{version}\"",
+            f"-DCOVER_RAMULATOR_VERSION=\"{version}\"",
             "-I", str(source / "src"), str(bridge_source), str(library),
             f"-Wl,-rpath,{library.parent}", "-o", str(output),
         ]
@@ -59,7 +59,7 @@ def main(argv: list[str] | None = None) -> int:
             [args.compiler, "--version"], text=True,
         ).splitlines()[0]
         manifest = {
-            "schema_version": "gala-ramulator2-bridge-build-v1",
+            "schema_version": "cover-ramulator2-bridge-build-v1",
             "ramulator_commit": commit,
             "ramulator_version": version,
             "ramulator_library": str(library),

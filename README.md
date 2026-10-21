@@ -1,7 +1,8 @@
-# GALA Simulator
+# COVER Simulator
 
-GALA Simulator is an architecture research framework for evaluating GALA, a
-hardware/software co-design for Gaussian-based tomographic reconstruction. It
+COVER Simulator is the research framework for **COVER: An Architecture for
+Accelerating Gaussian Volumetric Reconstruction through Cross-Query Dataflow
+and Semantic Residency**. It
 combines a numerical reference path, trace capture, an event-driven cycle
 model, and compiler/architecture ablations behind reproducible interfaces.
 
@@ -51,18 +52,33 @@ python -m pip install -e '.[quality,parquet,assets]'
 Validate the repository configuration and local workspace:
 
 ```bash
-gala-sim config-check --config configs/architecture/gala.yaml
-gala-sim workspace-check
+cover-sim config-check --config configs/architecture/cover.yaml
+cover-sim workspace-check
 pytest -q
 ```
 
 Inspect the available commands:
 
 ```bash
-gala-sim --help
-gala-sim cycle-replay --help
-gala-sim archive-ablation --help
+cover-sim --help
+cover-sim cycle-replay --help
+cover-sim archive-ablation --help
 ```
+
+## Release Compatibility
+
+Version 0.2.0 uses the `cover-simulator` distribution, `cover_sim` Python
+package, `cover-sim` command, `CoverConfig` class, and `COVER_WORKSPACE`
+environment variable. Project-owned format identifiers use the `cover-`
+prefix; schema version suffixes and field meanings are unchanged. Native
+bridge symbols and build macros use the corresponding COVER namespace, so
+rebuild the optional bridge before native memory timing runs.
+
+Keep artifacts from earlier releases immutable. Regenerate derived traces,
+configuration identities, manifests, and results with the current tools;
+their schema labels, provenance text, source paths, and hashes may differ.
+Architecture parameter values, algorithms, and numerical operations are
+unchanged. CLAMP and CLAMP-CUDA retain their technical names.
 
 ## Local Workspace
 
@@ -83,7 +99,7 @@ workspace/
 The workspace location is selected in this order:
 
 1. The command-line `--workspace` option
-2. The `GALA_WORKSPACE` environment variable
+2. The `COVER_WORKSPACE` environment variable
 3. The `workspace/` directory in the repository root
 
 The complete workspace is ignored by Git and excluded from package builds.
@@ -94,8 +110,8 @@ An installed wheel can be invoked outside the clone by identifying the
 configuration root explicitly:
 
 ```bash
-gala-sim --repository /path/to/GALA config-check \
-  --config configs/architecture/gala.yaml
+cover-sim --repository /path/to/COVER config-check \
+  --config configs/architecture/cover.yaml
 ```
 
 ## Acquire Models and Datasets
@@ -103,9 +119,9 @@ gala-sim --repository /path/to/GALA config-check \
 Preview or acquire the catalogued public assets:
 
 ```bash
-gala-sim acquire --all --dry-run
-gala-sim acquire --models r2_gaussian,fact_gs,exact_gs
-gala-sim acquire --datasets chest,walnut,hdtomo_usb
+cover-sim acquire --all --dry-run
+cover-sim acquire --models r2_gaussian,fact_gs,exact_gs
+cover-sim acquire --datasets chest,walnut,hdtomo_usb
 ```
 
 Acquisition is manifest-driven. Downloads are resumable, publisher checksums
@@ -142,12 +158,12 @@ A complete workflow uses the following order:
 Example cycle replay:
 
 ```bash
-gala-sim cycle-replay \
+cover-sim cycle-replay \
   --trace workspace/traces/example \
-  --config configs/architecture/gala.yaml \
+  --config configs/architecture/cover.yaml \
   --ramulator-build-manifest workspace/build/ramulator2-build.json \
   --ramulator-config configs/memory/ramulator2-lpddr5-6400-external.yaml \
-  --resource-usage configs/architecture/gala-resource-usage.json \
+  --resource-usage configs/architecture/cover-resource-usage.json \
   --policy variant:1111 \
   --output workspace/results/example-full
 ```
@@ -172,7 +188,7 @@ Build the bridge from a verified Ramulator 2 checkout:
 python tools/build_ramulator2_bridge.py \
   --ramulator-source workspace/upstream/ramulator2 \
   --ramulator-library workspace/build/ramulator2/libramulator.so \
-  --output workspace/build/libgala_ramulator2_bridge.so \
+  --output workspace/build/libcover_ramulator2_bridge.so \
   --manifest workspace/build/ramulator2-build.json
 ```
 
@@ -183,7 +199,7 @@ timing runs.
 
 | Path | Purpose |
 | --- | --- |
-| `gala_sim/` | Simulator, adapter, trace, timing, and output packages |
+| `cover_sim/` | Simulator, adapter, trace, timing, and output packages |
 | `configs/` | Architecture, model, dataset, memory, and profiling manifests |
 | `native/` | Native Ramulator 2 bridge source |
 | `tools/` | Repository utilities |
@@ -201,5 +217,5 @@ avoid embedding local paths or generated artifacts. See
 
 ## License
 
-The GALA Simulator source is licensed under the Apache License 2.0. See
+The COVER Simulator source is licensed under the Apache License 2.0. See
 [LICENSE](LICENSE). Upstream models and datasets retain their own licenses.

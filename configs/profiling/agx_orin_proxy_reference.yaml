@@ -1,4 +1,4 @@
-schema_version: gala-gpu-proxy-reference-v1
+schema_version: cover-gpu-proxy-reference-v1
 method: same-generation-public-specification-proxy
 formal_performance_eligible: false
 local:

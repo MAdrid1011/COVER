@@ -5,7 +5,7 @@ from types import ModuleType, SimpleNamespace
 
 import json
 
-from gala_sim.adapters import exact_runtime
+from cover_sim.adapters import exact_runtime
 
 
 def _modules(monkeypatch, calls: list[tuple[bool, int | None]]) -> tuple[ModuleType, ModuleType, ModuleType]:

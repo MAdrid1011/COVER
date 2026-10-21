@@ -8,11 +8,11 @@ import zipfile
 
 import pytest
 
-from gala_sim.assets import (
+from cover_sim.assets import (
     AssetCatalog, AssetFile, AssetSelection, DatasetAsset, _acquire_dataset,
     _verify_file, acquire_assets, download_file, safe_extract_zip,
 )
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.workspace import WorkspacePaths
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -115,7 +115,7 @@ def test_download_reuses_a_complete_local_file(monkeypatch, tmp_path: Path) -> N
 
 def test_download_checks_free_space_before_network(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
-        "gala_sim.assets.shutil.disk_usage",
+        "cover_sim.assets.shutil.disk_usage",
         lambda path: shutil._ntuple_diskusage(total=10, used=10, free=0),
     )
     monkeypatch.setattr("requests.get", lambda *args, **kwargs: pytest.fail("network used"))
@@ -149,7 +149,7 @@ def test_completed_dataset_acquisition_is_verified_without_download(
         "https://license.example", (AssetFile("data.zip", archive.stat().st_size),),
         None, None, tmp_path / "fixture.yaml",
     )
-    monkeypatch.setattr("gala_sim.assets.download_file", lambda *args, **kwargs: pytest.fail("download used"))
+    monkeypatch.setattr("cover_sim.assets.download_file", lambda *args, **kwargs: pytest.fail("download used"))
     identity, action = _acquire_dataset(asset, destination, tmp_path / "cache", resume=True)
     assert identity == digest
     assert action == "verify"

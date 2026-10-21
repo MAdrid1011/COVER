@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gala_sim.timing.memory import Ramulator2Backend
+from cover_sim.timing.memory import Ramulator2Backend
 
 
 class _SingleEntryBinding:

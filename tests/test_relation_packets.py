@@ -6,20 +6,20 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.clamp import (
+from cover_sim.clamp import (
     PrimitiveKind, ResourceClass, SemanticWorksets, TraceBuilder, TraceEvent,
 )
-from gala_sim.clamp.events import EVENT_SCHEMA_VERSION, dependency_dtype
-from gala_sim.config import load_config
-from gala_sim.timing import (
+from cover_sim.clamp.events import EVENT_SCHEMA_VERSION, dependency_dtype
+from cover_sim.config import load_config
+from cover_sim.timing import (
     BufferedVirtualCycleConsumer, CycleConfig, CycleEngine, RelationPacketPlan,
     RelationPacketPlanError, RelationWindowDescriptor, SemanticPlacement,
     analyze_cycle_lower_bounds,
 )
-from gala_sim.timing.modules import (
+from cover_sim.timing.modules import (
     OwnerGradientTracker, QueryReplayTracker, RelationWindowTracker,
 )
-from gala_sim.trace import Trace, VirtualQueryEventExpander, VirtualTracePacket
+from cover_sim.trace import Trace, VirtualQueryEventExpander, VirtualTracePacket
 
 
 def _virtual_trace(source: VirtualTracePacket, *, query_lanes: int = 8) -> Trace:
@@ -349,8 +349,8 @@ def test_base_replay_waits_for_every_consumer_in_the_window() -> None:
         point_keys=np.asarray([0], dtype=np.uint64), masks=masks,
         loss_flags=1, backward_confirmed=True,
     ))
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    result = CycleEngine(CycleConfig.from_gala(
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    result = CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     ), policy="base").run(trace)
     kinds = trace.events["primitive_kind"]
@@ -496,8 +496,8 @@ def test_offline_cycle_engine_charges_sparse_relation_chain_per_physical_packet(
         point_keys=np.asarray([0], dtype=np.uint64), masks=masks,
         loss_flags=1, backward_confirmed=True,
     ))
-    config = CycleConfig.from_gala(load_config(
-        Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config = CycleConfig.from_cover(load_config(
+        Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     ), _Memory())
 
     result = CycleEngine(config).run(trace)
@@ -528,11 +528,11 @@ def test_online_and_offline_packet_replay_have_exact_cycles_and_completions() ->
         loss_flags=1, backward_confirmed=True,
     )
     trace = _virtual_trace(source)
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    offline = CycleEngine(CycleConfig.from_gala(
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    offline = CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     )).run(trace, collect_compute_telemetry=True)
-    session = CycleEngine(CycleConfig.from_gala(
+    session = CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     )).online_session(
         max_events=2, max_frontier_events=64,
@@ -560,9 +560,9 @@ def test_online_and_offline_partial_replay_packets_match_each_lane_cycle() -> No
         loss_flags=1, backward_confirmed=True,
     )
     trace = _virtual_trace(source)
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     config = replace(
-        CycleConfig.from_gala(load_config(config_path), _Memory()),
+        CycleConfig.from_cover(load_config(config_path), _Memory()),
         trace_continuation_query_packs=None,
         # Keep this focused regression on partial-packet draining.  The
         # production profile has sixteen lanes and would complete this
@@ -622,8 +622,8 @@ def test_compact_and_expanded_semantic_placement_are_identical() -> None:
         loss_flags=1, backward_confirmed=True,
     )
     trace = _virtual_trace(source)
-    config = CycleConfig.from_gala(load_config(
-        Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config = CycleConfig.from_cover(load_config(
+        Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     ), _Memory())
     packet_plan = RelationPacketPlan.from_trace(
         trace, query_lanes=config.relation_query_lanes,
@@ -667,8 +667,8 @@ def test_semantic_compiler_applies_placement_without_residency_hardware() -> Non
         loss_flags=1, backward_confirmed=True,
     )
     trace = _virtual_trace(source)
-    config = CycleConfig.from_gala(load_config(
-        Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config = CycleConfig.from_cover(load_config(
+        Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     ), _Memory())
 
     base = CycleEngine(config, policy="variant:0000").run(trace)
@@ -693,8 +693,8 @@ def test_query_compiler_applies_compute_placement_without_query_hardware() -> No
         loss_flags=1, backward_confirmed=True,
     )
     trace = _virtual_trace(source)
-    config = CycleConfig.from_gala(load_config(
-        Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config = CycleConfig.from_cover(load_config(
+        Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     ), _Memory())
 
     base = CycleEngine(config, policy="variant:0000").run(trace)
@@ -720,11 +720,11 @@ def test_semantic_worksets_count_physical_packet_readers_not_logical_lanes() -> 
     assert int(worksets.requests["total_uses"][0]) == 1
     assert bool(worksets.requests["last_use"][0])
 
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    offline = CycleEngine(CycleConfig.from_gala(
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    offline = CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     ), policy="variant:0101").run(trace)
-    sink = BufferedVirtualCycleConsumer(CycleEngine(CycleConfig.from_gala(
+    sink = BufferedVirtualCycleConsumer(CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     ), policy="variant:0101").online_session(
         max_events=2, max_frontier_events=64, initial_gaussian_count=5,
@@ -747,11 +747,11 @@ def test_online_and_offline_semantic_return_multicast_match_exactly() -> None:
         point_keys=np.arange(5, dtype=np.uint64), masks=masks,
         loss_flags=1, backward_confirmed=True,
     )
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    offline = CycleEngine(CycleConfig.from_gala(
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    offline = CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     ), policy="variant:0101").run(_virtual_trace(source))
-    sink = BufferedVirtualCycleConsumer(CycleEngine(CycleConfig.from_gala(
+    sink = BufferedVirtualCycleConsumer(CycleEngine(CycleConfig.from_cover(
         load_config(config_path), _Memory(),
     ), policy="variant:0101").online_session(
         max_events=2, max_frontier_events=64, initial_gaussian_count=1,
@@ -790,15 +790,15 @@ def test_cycle_bounds_report_physical_packets_and_lane_utilization() -> None:
         loss_flags=1, backward_confirmed=True,
     )
     trace = _virtual_trace(source)
-    config = CycleConfig.from_gala(load_config(
-        Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config = CycleConfig.from_cover(load_config(
+        Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     ), _Memory())
     engine = CycleEngine(config)
     base = engine.run(trace)
 
     report = analyze_cycle_lower_bounds(
-        CycleEngine(CycleConfig.from_gala(load_config(
-            Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+        CycleEngine(CycleConfig.from_cover(load_config(
+            Path(__file__).parents[1] / "configs/architecture/cover.yaml"
         ), _Memory())),
         trace,
         base_asic_cycles=base.total_cycles,
@@ -837,10 +837,10 @@ def test_base_and_oracles_share_identical_physical_packet_work() -> None:
         point_keys=np.asarray([0], dtype=np.uint64), masks=masks,
         loss_flags=1, backward_confirmed=True,
     ))
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
 
     def run(policy: str):
-        return CycleEngine(CycleConfig.from_gala(
+        return CycleEngine(CycleConfig.from_cover(
             load_config(config_path), _Memory(),
         ), policy=policy).run(trace)
 

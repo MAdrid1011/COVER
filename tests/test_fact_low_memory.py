@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 import numpy as np
 
-from gala_sim.adapters.fact_low_memory import (
+from cover_sim.adapters.fact_low_memory import (
     LazyProjection,
     _build_lazy_camera,
     _lazy_read_cameras,
@@ -170,7 +170,7 @@ def test_exact_low_memory_overlay_uses_exact_module_boundaries(monkeypatch) -> N
         requested.append(name)
         return modules[name]
 
-    monkeypatch.setattr("gala_sim.adapters.fact_low_memory.importlib.import_module", load)
+    monkeypatch.setattr("cover_sim.adapters.fact_low_memory.importlib.import_module", load)
     original_reader = Reader.readCTameras
     original_loader = CameraUtils.loadCam
 
@@ -217,7 +217,7 @@ def test_r2_low_memory_overlay_uses_r2_module_boundaries(monkeypatch) -> None:
         requested.append(name)
         return modules[name]
 
-    monkeypatch.setattr("gala_sim.adapters.fact_low_memory.importlib.import_module", load)
+    monkeypatch.setattr("cover_sim.adapters.fact_low_memory.importlib.import_module", load)
     overlay = install_r2_low_memory_overlay()
 
     assert requested[:4] == [

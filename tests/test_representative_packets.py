@@ -6,11 +6,11 @@ import json
 import numpy as np
 import pytest
 
-from gala_sim.clamp.events import PrimitiveKind
-from gala_sim.tools.representative_packets import (
+from cover_sim.clamp.events import PrimitiveKind
+from cover_sim.tools.representative_packets import (
     build_representative_packet_trace, plan_representative_packet_groups,
 )
-from gala_sim.trace import (
+from cover_sim.trace import (
     VirtualPacketArchiveReader, VirtualPacketArchiveWriter, VirtualTracePacket,
     snapshot_live_archive_prefix, validate_trace,
 )

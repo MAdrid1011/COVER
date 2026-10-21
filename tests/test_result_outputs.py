@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from gala_sim.results import RunManifest
-from gala_sim.results.run import RunOutputWriter
-from gala_sim.timing import CycleConfig, CycleEngine, ModuleTiming
+from cover_sim.results import RunManifest
+from cover_sim.results.run import RunOutputWriter
+from cover_sim.timing import CycleConfig, CycleEngine, ModuleTiming
 from tests.test_trace_cycle import _Memory, _trace
 
 

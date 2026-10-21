@@ -5,12 +5,12 @@ import importlib
 from pathlib import Path
 from types import SimpleNamespace
 
-from gala_sim.cli import main
-from gala_sim.tools.inactivity import InactivityWatchdog
-from gala_sim.timing import CycleProgress
+from cover_sim.cli import main
+from cover_sim.tools.inactivity import InactivityWatchdog
+from cover_sim.timing import CycleProgress
 from tests.test_trace_cycle import _trace
-from gala_sim.trace import Trace, TraceWriter
-from gala_sim.trace import VirtualPacketArchiveWriter
+from cover_sim.trace import Trace, TraceWriter
+from cover_sim.trace import VirtualPacketArchiveWriter
 from tests.test_virtual_capture import _packet
 
 
@@ -22,7 +22,7 @@ def test_cli_validates_trace_and_reports_frozen_config(tmp_path: Path, capsys) -
     TraceWriter().write(_trace(), trace_root)
     assert main(["trace-validate", "--trace", str(trace_root)]) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "passed"
-    assert main(["config-check", "--config", "configs/architecture/gala.yaml"]) == 0
+    assert main(["config-check", "--config", "configs/architecture/cover.yaml"]) == 0
     result = json.loads(capsys.readouterr().out)
     assert result["ready"] is True
     assert result["pending"] == []
@@ -51,7 +51,7 @@ def test_repository_option_resolves_config_outside_current_directory(
     monkeypatch.chdir(tmp_path)
     assert main([
         "--repository", str(ROOT), "config-check",
-        "--config", "configs/architecture/gala.yaml",
+        "--config", "configs/architecture/cover.yaml",
     ]) == 0
     assert json.loads(capsys.readouterr().out)["ready"] is True
 
@@ -59,7 +59,7 @@ def test_repository_option_resolves_config_outside_current_directory(
 def test_campaign_cli_propagates_representative_archive_scope(
     monkeypatch, tmp_path: Path, capsys,
 ) -> None:
-    cli = importlib.import_module("gala_sim.cli.main")
+    cli = importlib.import_module("cover_sim.cli.main")
     captured: dict[str, object] = {}
 
     def fake_run_campaigns(selections, **kwargs):
@@ -82,7 +82,7 @@ def test_campaign_cli_propagates_representative_archive_scope(
 def test_campaign_cli_propagates_official_trace_scope(
     monkeypatch, tmp_path: Path, capsys,
 ) -> None:
-    cli = importlib.import_module("gala_sim.cli.main")
+    cli = importlib.import_module("cover_sim.cli.main")
     captured: dict[str, object] = {}
 
     def fake_run_campaigns(selections, **kwargs):
@@ -106,7 +106,7 @@ def test_campaign_cli_propagates_official_trace_scope(
 def test_campaign_cli_remaining_selects_eleven_combinations(
     monkeypatch, tmp_path: Path, capsys,
 ) -> None:
-    cli = importlib.import_module("gala_sim.cli.main")
+    cli = importlib.import_module("cover_sim.cli.main")
     captured: dict[str, object] = {}
 
     def fake_run_campaigns(selections, **kwargs):
@@ -196,7 +196,7 @@ def test_formal_cycle_cli_writes_failed_preflight_without_timing_bypass(
     output = tmp_path / "run"
     assert main([
         "cycle-replay", "--trace", str(trace_root),
-        "--config", "configs/architecture/gala.yaml",
+        "--config", "configs/architecture/cover.yaml",
         "--resource-usage", str(usage), "--output", str(output),
     ]) == 2
     report = json.loads(capsys.readouterr().out)
@@ -208,7 +208,7 @@ def test_formal_cycle_cli_writes_failed_preflight_without_timing_bypass(
 def test_cycle_cli_watchdog_rejects_repeated_heartbeats(
     monkeypatch, tmp_path: Path,
 ) -> None:
-    cli = importlib.import_module("gala_sim.cli.main")
+    cli = importlib.import_module("cover_sim.cli.main")
 
     class Clock:
         value = 0.0
@@ -222,7 +222,7 @@ def test_cycle_cli_watchdog_rejects_repeated_heartbeats(
         clock_frequency_hz = 500_000_000
 
         @classmethod
-        def from_gala(cls, *args, **kwargs):
+        def from_cover(cls, *args, **kwargs):
             return cls()
 
     class FakeCycleEngine:
@@ -259,7 +259,7 @@ def test_cycle_cli_watchdog_rejects_repeated_heartbeats(
     output = tmp_path / "cycle"
     result = cli.main([
         "cycle-replay", "--trace", str(tmp_path / "trace"),
-        "--config", "configs/architecture/gala.yaml",
+        "--config", "configs/architecture/cover.yaml",
         "--ramulator-binding", "fixture:binding",
         "--resource-usage", str(tmp_path / "usage.json"),
         "--output", str(output),
@@ -278,7 +278,7 @@ def test_cycle_cli_rejects_windowed_trace_without_quick_scope(
     windowed = Trace(
         source.events, source.dependencies, source.payload,
         {**source.metadata, "trace_window": {
-            "schema_version": "gala-iteration-window-v1",
+            "schema_version": "cover-iteration-window-v1",
             "result_scope": "quick_trace_validation",
             "formal_performance_eligible": False,
             "quality_eligible": False,
@@ -302,7 +302,7 @@ def test_cycle_cli_rejects_windowed_trace_without_quick_scope(
 
     assert main([
         "cycle-replay", "--trace", str(trace_root),
-        "--config", "configs/architecture/gala.yaml",
+        "--config", "configs/architecture/cover.yaml",
         "--resource-usage", str(usage), "--output", str(tmp_path / "run"),
     ]) == 2
     assert "--quick-validation" in capsys.readouterr().err

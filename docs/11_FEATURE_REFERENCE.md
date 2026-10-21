@@ -12,15 +12,15 @@ through the simulator.
 
 | Primitive | Modeled behavior | Primary implementation |
 | --- | --- | --- |
-| `EXPAND` | Generate candidate and accepted query-Gaussian relations | `gala_sim/clamp/events.py`, `gala_sim/trace/virtual.py` |
-| `ROUTE` | Preserve query, Gaussian, relation, and reduction ownership across forward and adjoint paths | `gala_sim/timing/packets.py`, `gala_sim/timing/engine.py` |
-| `FOLD` | Close keyed query and Gaussian reductions after all inputs retire | `gala_sim/clamp/tasks.py`, `gala_sim/timing/engine.py` |
-| `AWAIT` | Release a consumer only after its query dependencies complete | `gala_sim/clamp/tasks.py` |
-| `HOLD` | Retain a versioned Gaussian state while declared uses remain | `gala_sim/clamp/worksets.py`, `gala_sim/timing/modules/hardware.py` |
-| `RELEASE` | Close residency after the last declared use and active read | `gala_sim/clamp/worksets.py`, `gala_sim/timing/modules/hardware.py` |
-| `TRANSFORM` | Execute coordinate, matrix, state, and update transforms | `gala_sim/timing/config.py`, model compute templates in `configs/architecture/gala.yaml` |
-| `EVALUATE` | Execute relation, projection, loss, and adjoint operations | `gala_sim/timing/modules/hardware.py`, model compute templates |
-| `COMBINE` | Combine attributes, reductions, and gradients with explicit resource use | `gala_sim/timing/modules/hardware.py`, model compute templates |
+| `EXPAND` | Generate candidate and accepted query-Gaussian relations | `cover_sim/clamp/events.py`, `cover_sim/trace/virtual.py` |
+| `ROUTE` | Preserve query, Gaussian, relation, and reduction ownership across forward and adjoint paths | `cover_sim/timing/packets.py`, `cover_sim/timing/engine.py` |
+| `FOLD` | Close keyed query and Gaussian reductions after all inputs retire | `cover_sim/clamp/tasks.py`, `cover_sim/timing/engine.py` |
+| `AWAIT` | Release a consumer only after its query dependencies complete | `cover_sim/clamp/tasks.py` |
+| `HOLD` | Retain a versioned Gaussian state while declared uses remain | `cover_sim/clamp/worksets.py`, `cover_sim/timing/modules/hardware.py` |
+| `RELEASE` | Close residency after the last declared use and active read | `cover_sim/clamp/worksets.py`, `cover_sim/timing/modules/hardware.py` |
+| `TRANSFORM` | Execute coordinate, matrix, state, and update transforms | `cover_sim/timing/config.py`, model compute templates in `configs/architecture/cover.yaml` |
+| `EVALUATE` | Execute relation, projection, loss, and adjoint operations | `cover_sim/timing/modules/hardware.py`, model compute templates |
+| `COMBINE` | Combine attributes, reductions, and gradients with explicit resource use | `cover_sim/timing/modules/hardware.py`, model compute templates |
 
 `PrimitiveKind` defines the stable event schema used by captured and virtual
 traces. `RelationPacketPlan` binds scalar event identities into physical
@@ -64,8 +64,8 @@ The event-driven cycle engine models these bounded units:
   native Ramulator 2 memory backend.
 
 The authoritative resource values are in
-`configs/architecture/gala.yaml`. The checked resource summary is in
-`configs/architecture/gala-resource-usage.json`.
+`configs/architecture/cover.yaml`. The checked resource summary is in
+`configs/architecture/cover-resource-usage.json`.
 
 ## Evaluation Variants
 

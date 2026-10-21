@@ -1,4 +1,4 @@
-schema_version: gala-dataset-source-v1
+schema_version: cover-dataset-source-v1
 id: hdtomo_usb
 name: HDTomo-USB
 provider: zenodo

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gala_sim.clamp import (
+from cover_sim.clamp import (
     PrimitiveKind, ResourceClass, SemanticWorksets, TraceBuilder, TraceEvent,
 )
 

@@ -5,14 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.tools.r2_gaussian_training_matrix import (
+from cover_sim.tools.r2_gaussian_training_matrix import (
     COMPILER_VARIANTS,
     _resolve_extension_root,
     run_matrix,
     summarize_matrix,
 )
-from gala_sim.gpu_measurement import load_gpu_compiler_measurement
-from gala_sim.tools.r2_gaussian_training_probe import TrainingProbeError
+from cover_sim.gpu_measurement import load_gpu_compiler_measurement
+from cover_sim.tools.r2_gaussian_training_probe import TrainingProbeError
 
 
 def _record(variant: str, elapsed_ms: float, *, state_sum: float = 3.0) -> dict:
@@ -81,7 +81,7 @@ def test_r2_matrix_honors_explicit_overlay_environment(
     source_root.mkdir(parents=True)
     explicit = tmp_path / "external-overlay"
     explicit.mkdir()
-    monkeypatch.setenv("GALA_R2_EXTENSION_ROOT", str(explicit))
+    monkeypatch.setenv("COVER_R2_EXTENSION_ROOT", str(explicit))
 
     assert _resolve_extension_root(source_root, None) == explicit
 
@@ -142,7 +142,7 @@ def test_r2_matrix_rejects_changed_workload() -> None:
 def test_r2_matrix_writes_campaign_measurement(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.r2_gaussian_training_matrix as matrix
+    import cover_sim.tools.r2_gaussian_training_matrix as matrix
 
     def fake_probe(**kwargs):
         variant = kwargs["compiler_variant"]
@@ -199,7 +199,7 @@ def test_r2_matrix_writes_campaign_measurement(
 def test_r2_matrix_keeps_stage_profile_out_of_four_way_timing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.r2_gaussian_training_matrix as matrix
+    import cover_sim.tools.r2_gaussian_training_matrix as matrix
 
     calls: list[tuple[str, bool]] = []
 

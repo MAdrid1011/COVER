@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.tools.exact_gs_compiler_overlay import (
+from cover_sim.tools.exact_gs_compiler_overlay import (
     _QUERY_TARGETS,
     _SEMANTIC_TARGETS,
     _SEMANTIC_ORDER_SENSITIVE_TARGETS,
@@ -63,8 +63,8 @@ def test_exact_overlay_adds_independent_query_and_semantic_controls() -> None:
         "__launch_bounds__(BLOCK_X * BLOCK_Y, QueryHighOccupancy ? 3 : 2)"
         in transformed
     )
-    assert "GALA_QUERY_WARP_REDUCE" in transformed
-    assert "GALA_SEMANTIC_WARP_REDUCE" in transformed
+    assert "COVER_QUERY_WARP_REDUCE" in transformed
+    assert "COVER_SEMANTIC_WARP_REDUCE" in transformed
     assert "__match_any_sync(active_mask, target_label)" in transformed
     assert "if (__popc(target_mask) == 1)" in transformed
     assert "__shfl_sync" in transformed
@@ -103,12 +103,12 @@ def test_prepare_overlay_copies_explicit_glm_and_records_provenance(
 
     assert (output / "third_party/glm/glm/glm.hpp").is_file()
     manifest = json.loads(
-        (output / "gala-overlay-manifest.json").read_text(encoding="utf-8")
+        (output / "cover-overlay-manifest.json").read_text(encoding="utf-8")
     )
     assert manifest["hash_policy"] == "record_only_no_hash_rejection"
     assert manifest["environment_controls"] == {
-        "query": "GALA_QUERY_WARP_REDUCE",
-        "semantic": "GALA_SEMANTIC_WARP_REDUCE",
+        "query": "COVER_QUERY_WARP_REDUCE",
+        "semantic": "COVER_SEMANTIC_WARP_REDUCE",
     }
 
 
@@ -121,7 +121,7 @@ def test_exact_build_records_tools_and_keeps_both_failure_streams(
         stderr = "compiler stderr marker"
 
     monkeypatch.setattr(
-        "gala_sim.tools.exact_gs_compiler_overlay.subprocess.run",
+        "cover_sim.tools.exact_gs_compiler_overlay.subprocess.run",
         lambda *_args, **_kwargs: Completed(),
     )
     python = tmp_path / "python"
@@ -137,7 +137,7 @@ def test_exact_build_records_tools_and_keeps_both_failure_streams(
     assert "compiler stdout marker" in str(raised.value)
     assert "compiler stderr marker" in str(raised.value)
     report = json.loads(
-        (tmp_path / "gala-build-manifest.json").read_text(encoding="utf-8")
+        (tmp_path / "cover-build-manifest.json").read_text(encoding="utf-8")
     )
     assert report["cxx"] == str(cxx.resolve())
     assert report["nvcc"] == str(nvcc.resolve())

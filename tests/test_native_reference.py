@@ -4,16 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.adapters.native_reference import (
+from cover_sim.adapters.native_reference import (
     NativeReferenceError,
     _quality_with_frozen_interpreter,
     run_native_reference,
 )
-from gala_sim.config import load_config
-from gala_sim.identity import canonical_json, sha256_bytes
-from gala_sim.metrics import QualityConfig
-from gala_sim.tools.preflight import ComputeProcess
-from gala_sim.tools.preflight import GpuSample
+from cover_sim.config import load_config
+from cover_sim.identity import canonical_json, sha256_bytes
+from cover_sim.metrics import QualityConfig
+from cover_sim.tools.preflight import ComputeProcess
+from cover_sim.tools.preflight import GpuSample
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def _freeze(tmp_path: Path, config_sha256: str) -> dict[str, object]:
     value: dict[str, object] = {
-        "schema_version": "gala-input-freeze-v3",
+        "schema_version": "cover-input-freeze-v3",
         "config": {"sha256": config_sha256},
         "repository": {"commit": "a" * 40},
         "model": {"commit": "b" * 40},
@@ -34,25 +34,25 @@ def _freeze(tmp_path: Path, config_sha256: str) -> dict[str, object]:
 
 
 def test_native_reference_requires_passed_matching_preflight(tmp_path: Path) -> None:
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     freeze = _freeze(tmp_path, config.sha256)
     with pytest.raises(NativeReferenceError, match="passed native-preflight"):
         run_native_reference(config, freeze, {
-            "schema_version": "gala-native-preflight-v1",
+            "schema_version": "cover-native-preflight-v1",
             "status": "failed_preflight",
             "freeze_manifest_sha256": freeze["run_manifest_sha256"],
         }, tmp_path / "run", sample_fn=lambda: None)
 
 
 def test_native_reference_rejects_external_gpu_before_launch(tmp_path: Path) -> None:
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     freeze = _freeze(tmp_path, config.sha256)
     sample = type("Sample", (), {
         "compute_processes": (ComputeProcess("GPU-fixture", 42, "external", 128),),
     })()
     with pytest.raises(NativeReferenceError, match="gpu_busy_external"):
         run_native_reference(config, freeze, {
-            "schema_version": "gala-native-preflight-v1", "status": "passed",
+            "schema_version": "cover-native-preflight-v1", "status": "passed",
             "freeze_manifest_sha256": freeze["run_manifest_sha256"],
         }, tmp_path / "run", sample_fn=lambda: sample)
     status = (tmp_path / "run" / "status.json").read_text(encoding="utf-8")
@@ -66,11 +66,11 @@ def test_native_reference_rejects_external_gpu_before_launch(tmp_path: Path) -> 
 
 
 def test_native_reference_records_sampling_failure(tmp_path: Path) -> None:
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     freeze = _freeze(tmp_path, config.sha256)
     with pytest.raises(NativeReferenceError, match="gpu_sampling_unavailable"):
         run_native_reference(config, freeze, {
-            "schema_version": "gala-native-preflight-v1", "status": "passed",
+            "schema_version": "cover-native-preflight-v1", "status": "passed",
             "freeze_manifest_sha256": freeze["run_manifest_sha256"],
         }, tmp_path / "run", sample_fn=lambda: (_ for _ in ()).throw(
             RuntimeError("fixture sampler failure")
@@ -82,7 +82,7 @@ def test_native_reference_records_sampling_failure(tmp_path: Path) -> None:
 def test_native_reference_watchdog_terminates_inactive_process(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 ) -> None:
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     freeze = _freeze(tmp_path, config.sha256)
 
     class Clock:
@@ -113,12 +113,12 @@ def test_native_reference_watchdog_terminates_inactive_process(
             return self.returncode if self.returncode is not None else 0
 
     clock = Clock()
-    monkeypatch.setattr("gala_sim.adapters.native_reference.subprocess.Popen", Process)
+    monkeypatch.setattr("cover_sim.adapters.native_reference.subprocess.Popen", Process)
     idle = GpuSample(0.0, 0.0, 0, None, None, None, None)
     with pytest.raises(NativeReferenceError, match="watchdog_inactivity_timeout"):
         run_native_reference(
             config, freeze, {
-                "schema_version": "gala-native-preflight-v1", "status": "passed",
+                "schema_version": "cover-native-preflight-v1", "status": "passed",
                 "freeze_manifest_sha256": freeze["run_manifest_sha256"],
             }, tmp_path / "run", sample_fn=lambda: idle,
             inactivity_timeout_seconds=2.0,

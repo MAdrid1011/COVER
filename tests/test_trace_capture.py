@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from gala_sim.adapters.trace_capture import (
+from cover_sim.adapters.trace_capture import (
     LOSS_L1,
     LOSS_SSIM,
     LOSS_TV,
@@ -26,15 +26,15 @@ from gala_sim.adapters.trace_capture import (
     TraceSession,
     _QueryContext,
 )
-from gala_sim.adapters.trace_runner import _iteration_range
-from gala_sim.clamp import (
+from cover_sim.adapters.trace_runner import _iteration_range
+from cover_sim.clamp import (
     PrimitiveKind,
     ResourceClass,
     TraceBuilder,
     TraceEvent,
     UpdateBeginKind,
 )
-from gala_sim.trace import (
+from cover_sim.trace import (
     Trace, TraceValidationConfig, TraceValidationError, validate_trace,
 )
 
@@ -369,7 +369,7 @@ def test_capture_iteration_window_is_explicit_and_audited(
     trace = session.finish()
 
     assert trace.metadata["trace_window"] == {
-        "schema_version": "gala-iteration-window-v1",
+        "schema_version": "cover-iteration-window-v1",
         "result_scope": "quick_trace_validation",
         "formal_performance_eligible": False,
         "quality_eligible": False,
@@ -399,14 +399,14 @@ def test_capture_iteration_range_parser_rejects_invalid_bounds() -> None:
 def test_trace_runner_virtual_capture_requires_explicit_online_or_audit_scope(
     tmp_path: Path,
 ) -> None:
-    from gala_sim.adapters.trace_runner import main
+    from cover_sim.adapters.trace_runner import main
 
     with pytest.raises(ValueError, match="requires cycle config"):
         main(["--trace-output", str(tmp_path / "trace"), "--virtual-capture", "train.py"])
     with pytest.raises(ValueError, match="requires --virtual-capture"):
         main([
             "--trace-output", str(tmp_path / "trace"),
-            "--online-cycle-config", "configs/architecture/gala.yaml",
+            "--online-cycle-config", "configs/architecture/cover.yaml",
             "train.py",
         ])
     with pytest.raises(ValueError, match="packet-archive-root requires"):
@@ -444,7 +444,7 @@ def test_trace_runner_virtual_capture_requires_explicit_online_or_audit_scope(
 def test_trace_runner_finishes_after_controlled_capture_range_stop(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from gala_sim.adapters import trace_runner
+    from cover_sim.adapters import trace_runner
 
     calls: list[str] = []
 
@@ -482,7 +482,7 @@ def test_trace_runner_finishes_after_controlled_capture_range_stop(
 def test_trace_runner_decouples_archive_compression_from_cycle_frontier(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from gala_sim.adapters import trace_runner
+    from cover_sim.adapters import trace_runner
 
     session_arguments: dict[str, object] = {}
 
@@ -505,7 +505,7 @@ def test_trace_runner_decouples_archive_compression_from_cycle_frontier(
         lambda: SimpleNamespace(restore=lambda: None),
     )
     monkeypatch.setattr(trace_runner.runpy, "run_path", lambda *_args, **_kwargs: None)
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
 
     assert trace_runner.main([
         "--trace-output", str(tmp_path / "trace"),
@@ -1089,7 +1089,7 @@ def test_collection_failure_prevents_finishing_partial_trace(tmp_path: Path) -> 
 def test_trace_runner_does_not_finish_after_official_failure(
     tmp_path: Path, monkeypatch
 ) -> None:
-    from gala_sim.adapters import trace_runner
+    from cover_sim.adapters import trace_runner
 
     calls: list[str] = []
 

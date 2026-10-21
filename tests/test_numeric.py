@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gala_sim.functional import ReductionOrder, flush_subnormal, replay_fp32_sum
+from cover_sim.functional import ReductionOrder, flush_subnormal, replay_fp32_sum
 
 
 def test_fp32_reduction_order_is_explicit() -> None:

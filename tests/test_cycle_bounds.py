@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 
-from gala_sim.config import load_config
+from cover_sim.config import load_config
 
-from gala_sim.clamp.builder import TraceBuilder
-from gala_sim.clamp.events import PrimitiveKind, TraceEvent
-from gala_sim.timing import (
+from cover_sim.clamp.builder import TraceBuilder
+from cover_sim.clamp.events import PrimitiveKind, TraceEvent
+from cover_sim.timing import (
     ComputePathProfile, ComputeStage, ComputeTemplateProfile,
     CycleConfig, CycleEngine, ModuleTiming, analyze_cycle_lower_bounds,
 )
@@ -263,8 +263,8 @@ def test_query_loss_bound_uses_registered_query_issue_width() -> None:
             primitive_kind=int(PrimitiveKind.CONSUMER),
             query_id=query_id,
         ))
-    config = CycleConfig.from_gala(
-        load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml"),
+    config = CycleConfig.from_cover(
+        load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml"),
         _Memory(),
     )
     report = analyze_cycle_lower_bounds(
@@ -289,8 +289,8 @@ def test_query_reduction_bound_counts_physical_banks_not_partial_entries() -> No
             query_id=query_id,
             reduction_key=query_id,
         ))
-    config = CycleConfig.from_gala(
-        load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml"),
+    config = CycleConfig.from_cover(
+        load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml"),
         _Memory(),
     )
     report = analyze_cycle_lower_bounds(
@@ -389,8 +389,8 @@ def test_adjoint_replay_bound_is_work_conserving_across_physical_lanes() -> None
             primitive_kind=int(PrimitiveKind.ADJOINT),
             query_id=0,
         ))
-    config = CycleConfig.from_gala(
-        load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml"),
+    config = CycleConfig.from_cover(
+        load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml"),
         _Memory(),
     )
     config = replace(

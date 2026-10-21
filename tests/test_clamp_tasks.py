@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 
-from gala_sim.clamp import (
+from cover_sim.clamp import (
     FusionIssueScheduler, ReductionDomain, TaskKind, TaskPacket,
 )
 

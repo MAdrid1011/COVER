@@ -2,13 +2,13 @@
 
 ## Registry Rules
 
-`configs/architecture/gala.yaml` is the authoritative typed parameter
+`configs/architecture/cover.yaml` is the authoritative typed parameter
 registry. Every entry contains a value, unit, source, scope, and freeze state;
 parameters with legal tuning freedom also define an allowed range.
 
 A configuration is accepted only when every required entry is present, units
 and types match the schema, values lie within their ranges, and the aggregate
-resources fit `configs/architecture/gala-resource-usage.json`.
+resources fit `configs/architecture/cover-resource-usage.json`.
 
 Source code must not duplicate a configurable latency, width, capacity, bank
 count, quality threshold, or runtime bound. Derived values may be computed from
@@ -62,7 +62,7 @@ its local output and does not create a complete cycle result.
 
 ## Validation and Provenance
 
-`gala-sim config-check` resolves the registry and reports configuration
+`cover-sim config-check` resolves the registry and reports configuration
 readiness. Resource closure verifies that regional SRAM allocations sum to the
 declared total and that replicated structures fit their budgets.
 

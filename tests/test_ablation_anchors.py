@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gala_sim.ablation.anchors import (
+from cover_sim.ablation.anchors import (
     SUPPORTED_DATASETS, SUPPORTED_MODELS, assess_upper_bound,
     hardware_target_speedups, static_anchors,
 )

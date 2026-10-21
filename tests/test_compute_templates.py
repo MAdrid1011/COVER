@@ -6,9 +6,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.clamp import PrimitiveKind, ResourceClass, TraceBuilder, TraceEvent
-from gala_sim.config import load_config
-from gala_sim.timing import (
+from cover_sim.clamp import PrimitiveKind, ResourceClass, TraceBuilder, TraceEvent
+from cover_sim.config import load_config
+from cover_sim.timing import (
     ComputeStage,
     ComputePathProfile,
     ComputeTemplateProfile,
@@ -17,15 +17,15 @@ from gala_sim.timing import (
     CycleEngine,
     ModuleTiming,
 )
-from gala_sim.timing.engine import (
+from cover_sim.timing.engine import (
     _QueryReplayLaneScheduler,
     _QueryReplayLaneWork,
     _ReadyCandidateQueue,
 )
-from gala_sim.timing.modules import (
+from cover_sim.timing.modules import (
     ComputePod, CounterBlock, OwnerGradientTracker, QueryReplayTracker,
 )
-from gala_sim.timing.packets import PhysicalPacketStage
+from cover_sim.timing.packets import PhysicalPacketStage
 
 
 class _Memory:
@@ -36,8 +36,8 @@ class _Memory:
 
 def _production_config() -> CycleConfig:
     root = Path(__file__).parents[1]
-    return CycleConfig.from_gala(
-        load_config(root / "configs/architecture/gala.yaml"), _Memory()
+    return CycleConfig.from_cover(
+        load_config(root / "configs/architecture/cover.yaml"), _Memory()
     )
 
 

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.timing import CycleConfig, ModuleTiming, ResourceEnvelope, ResourceUsage
-from gala_sim.config import load_config
+from cover_sim.timing import CycleConfig, ModuleTiming, ResourceEnvelope, ResourceUsage
+from cover_sim.config import load_config
 
 
 ROOT = Path(__file__).parents[1]
@@ -30,8 +30,8 @@ def test_resource_envelope_accepts_only_frozen_topology() -> None:
 
 
 def test_resource_envelope_is_derived_from_registered_architecture_values() -> None:
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
-    envelope = ResourceEnvelope.from_gala(config)
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
+    envelope = ResourceEnvelope.from_cover(config)
     assert envelope.shared_sram_bytes == 2_883_584
     assert envelope.pods == 4
     assert envelope.clusters_per_pod == 5
@@ -41,8 +41,8 @@ def test_resource_envelope_is_derived_from_registered_architecture_values() -> N
 
 
 def test_production_resource_usage_closes_all_six_shared_sram_regions() -> None:
-    config = CycleConfig.from_gala(
-        load_config(ROOT / "configs/architecture/gala.yaml"), _Memory()
+    config = CycleConfig.from_cover(
+        load_config(ROOT / "configs/architecture/cover.yaml"), _Memory()
     )
 
     assert config.resource_usage is not None
@@ -69,12 +69,12 @@ def test_production_resource_usage_closes_all_six_shared_sram_regions() -> None:
 
 def test_checked_in_resource_usage_matches_registered_architecture() -> None:
     document = json.loads(
-        (ROOT / "configs/architecture/gala-resource-usage.json").read_text(
+        (ROOT / "configs/architecture/cover-resource-usage.json").read_text(
             encoding="utf-8"
         )
     )
-    config = CycleConfig.from_gala(
-        load_config(ROOT / "configs/architecture/gala.yaml"), _Memory()
+    config = CycleConfig.from_cover(
+        load_config(ROOT / "configs/architecture/cover.yaml"), _Memory()
     )
     usage = config.resource_usage
     assert usage is not None

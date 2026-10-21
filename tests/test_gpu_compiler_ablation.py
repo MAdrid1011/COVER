@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from gala_sim.tools.gpu_compiler_ablation import (
+from cover_sim.tools.gpu_compiler_ablation import (
     GpuCompilerProbeError,
     RUNNER_VARIANTS,
     _run_once,

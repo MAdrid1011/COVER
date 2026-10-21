@@ -11,8 +11,8 @@
 #include "ramulator/frontend/i_frontend.h"
 #include "ramulator/memory_system/i_memory_system.h"
 
-#ifndef GALA_RAMULATOR_VERSION
-#define GALA_RAMULATOR_VERSION "unknown"
+#ifndef COVER_RAMULATOR_VERSION
+#define COVER_RAMULATOR_VERSION "unknown"
 #endif
 
 namespace {
@@ -144,16 +144,16 @@ Result guard(Function&& function, Result failure) noexcept {
 
 extern "C" {
 
-void* gala_ramulator_create(const char* configuration) noexcept {
+void* cover_ramulator_create(const char* configuration) noexcept {
   return guard([&]() -> void* { return new Bridge(configuration); },
                static_cast<void*>(nullptr));
 }
 
-void gala_ramulator_destroy(void* handle) noexcept {
+void cover_ramulator_destroy(void* handle) noexcept {
   delete static_cast<Bridge*>(handle);
 }
 
-int gala_ramulator_try_issue(void* handle, std::uint64_t address, int write,
+int cover_ramulator_try_issue(void* handle, std::uint64_t address, int write,
                              std::uint64_t request_id) noexcept {
   return guard(
       [&]() {
@@ -166,7 +166,7 @@ int gala_ramulator_try_issue(void* handle, std::uint64_t address, int write,
       -1);
 }
 
-int gala_ramulator_enqueue_group(void* handle, std::uint64_t group_id,
+int cover_ramulator_enqueue_group(void* handle, std::uint64_t group_id,
                                  const std::uint64_t* addresses,
                                  const std::uint64_t* request_ids,
                                  std::size_t count, int write) noexcept {
@@ -180,7 +180,7 @@ int gala_ramulator_enqueue_group(void* handle, std::uint64_t group_id,
       -1);
 }
 
-int gala_ramulator_tick(void* handle) noexcept {
+int cover_ramulator_tick(void* handle) noexcept {
   return guard(
       [&]() {
         if (handle == nullptr) throw std::invalid_argument("bridge handle is null");
@@ -190,7 +190,7 @@ int gala_ramulator_tick(void* handle) noexcept {
       -1);
 }
 
-std::size_t gala_ramulator_completion_count(void* handle) noexcept {
+std::size_t cover_ramulator_completion_count(void* handle) noexcept {
   return guard(
       [&]() {
         if (handle == nullptr) throw std::invalid_argument("bridge handle is null");
@@ -199,7 +199,7 @@ std::size_t gala_ramulator_completion_count(void* handle) noexcept {
       static_cast<std::size_t>(-1));
 }
 
-std::size_t gala_ramulator_drain(void* handle, std::uint64_t* output,
+std::size_t cover_ramulator_drain(void* handle, std::uint64_t* output,
                                  std::size_t capacity) noexcept {
   return guard(
       [&]() {
@@ -209,7 +209,7 @@ std::size_t gala_ramulator_drain(void* handle, std::uint64_t* output,
       static_cast<std::size_t>(-1));
 }
 
-int gala_ramulator_transaction_bytes(void* handle) noexcept {
+int cover_ramulator_transaction_bytes(void* handle) noexcept {
   return guard(
       [&]() {
         if (handle == nullptr) throw std::invalid_argument("bridge handle is null");
@@ -218,8 +218,8 @@ int gala_ramulator_transaction_bytes(void* handle) noexcept {
       -1);
 }
 
-const char* gala_ramulator_version() noexcept { return GALA_RAMULATOR_VERSION; }
+const char* cover_ramulator_version() noexcept { return COVER_RAMULATOR_VERSION; }
 
-const char* gala_ramulator_last_error() noexcept { return last_error.c_str(); }
+const char* cover_ramulator_last_error() noexcept { return last_error.c_str(); }
 
 }  // extern "C"

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from gala_sim.adapters.buffer_decoder import (
+from cover_sim.adapters.buffer_decoder import (
     decode_raster_virtual_packet,
     decode_voxel_virtual_packet,
 )

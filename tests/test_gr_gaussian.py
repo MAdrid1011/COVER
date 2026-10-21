@@ -5,20 +5,20 @@ import sys
 
 import numpy as np
 
-from gala_sim.adapters.gr_gaussian import (
+from cover_sim.adapters.gr_gaussian import (
     GRGaussianAdapter, adaptive_gaussian_step, build_knn_graph, denoised_point_cloud_initialization,
     density_loss_gradient, graph_smoothness, gr_loss,
     pixel_graph_densification_scores, radiative_splat,
     radiative_splat_density_gradient, volumetric_total_variation,
     _active_relation_indices, _trace_from_ray_bundle,
 )
-from gala_sim.adapters.datasets import DatasetManifest, DatasetProjection, ScannerGeometry
-from gala_sim.adapters.registry import model_descriptors
-from gala_sim.clamp import PrimitiveKind
-from gala_sim.clamp.events import has_relation_packet_metadata
-from gala_sim.config import load_config
-from gala_sim.trace import validate_trace
-from gala_sim.timing.packets import RelationPacketPlan
+from cover_sim.adapters.datasets import DatasetManifest, DatasetProjection, ScannerGeometry
+from cover_sim.adapters.registry import model_descriptors
+from cover_sim.clamp import PrimitiveKind
+from cover_sim.clamp.events import has_relation_packet_metadata
+from cover_sim.config import load_config
+from cover_sim.trace import validate_trace
+from cover_sim.timing.packets import RelationPacketPlan
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -167,7 +167,7 @@ def test_adapter_executes_cpu_bundle_and_captures_a_valid_trace(tmp_path: Path) 
     )
     output = tmp_path / "output"
     adapter = GRGaussianAdapter(ROOT, output, model_descriptors()["gr_gaussian"])
-    run = adapter.prepare(dataset, load_config(ROOT / "configs/architecture/gala.yaml"))
+    run = adapter.prepare(dataset, load_config(ROOT / "configs/architecture/cover.yaml"))
     assert run.dataset_root == dataset_root.resolve()
     assert run.official_command[0] == sys.executable
     assert (output / "input/rays.npz").is_file()

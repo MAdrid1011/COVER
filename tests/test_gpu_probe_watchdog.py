@@ -4,7 +4,7 @@ from threading import Event
 
 import pytest
 
-from gala_sim.tools.gpu_probe_watchdog import GpuWatchdog, ensure_host_memory_reserve
+from cover_sim.tools.gpu_probe_watchdog import GpuWatchdog, ensure_host_memory_reserve
 
 
 def test_host_memory_gate_accepts_exact_reserve() -> None:

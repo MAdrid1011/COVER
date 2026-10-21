@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gala_sim.tools.gpu_orin_estimate import (
+from cover_sim.tools.gpu_orin_estimate import (
     OrinEstimateError, estimate_normalized,
 )
 

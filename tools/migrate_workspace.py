@@ -14,7 +14,7 @@ from typing import Callable, Iterable
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.workspace import WorkspacePaths
 
 
 @dataclass(frozen=True)

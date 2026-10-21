@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.gpu_measurement import load_gpu_compiler_measurement
-from gala_sim.tools.gr_gaussian_training_probe import (
+from cover_sim.gpu_measurement import load_gpu_compiler_measurement
+from cover_sim.tools.gr_gaussian_training_probe import (
     COMPILER_VARIANTS,
     GRTrainingProbeError,
     ProbeObservation,
@@ -113,7 +113,7 @@ def test_gr_matrix_rejects_changed_dataset_identity() -> None:
 def test_gr_matrix_writes_campaign_measurement(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.gr_gaussian_training_probe as probe
+    import cover_sim.tools.gr_gaussian_training_probe as probe
 
     elapsed = {
         "gpu_base": 100.0,
@@ -164,7 +164,7 @@ def test_gr_matrix_writes_campaign_measurement(
 def test_gr_matrix_keeps_stage_profile_out_of_four_way_timing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.gr_gaussian_training_probe as probe
+    import cover_sim.tools.gr_gaussian_training_probe as probe
 
     calls: list[tuple[str, bool]] = []
 

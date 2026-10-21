@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gala_sim.tools.inactivity import (
+from cover_sim.tools.inactivity import (
     InactivityTimeoutError,
     InactivityWatchdog,
     observe_cycle_progress,

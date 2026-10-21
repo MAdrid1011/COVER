@@ -1,9 +1,9 @@
-schema_version: gala-campaign-v1
+schema_version: cover-campaign-v1
 name: r2_gaussian_chest
 workflow_step: freeze_inputs
 model_config: configs/models/r2_gaussian.yaml
 dataset_config: configs/datasets/chest.yaml
-architecture_config: configs/architecture/gala.yaml
+architecture_config: configs/architecture/cover.yaml
 random_seed:
   value: 0
   unit: seed
@@ -11,7 +11,7 @@ random_seed:
   scope: campaign
   status: frozen
 training:
-  schema_version: gala-r2-training-freeze-v1
+  schema_version: cover-r2-training-freeze-v1
   model_commit: f2579bfddd9aac009cb797c8503bef8119bbd022
   entrypoint: train.py
   command:

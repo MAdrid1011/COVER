@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.tools.r2_gaussian_compiler_overlay import (
+from cover_sim.tools.r2_gaussian_compiler_overlay import (
     EXTENSION_RELATIVE,
     R2CompilerOverlayError,
     prepare_overlay,
@@ -64,9 +64,9 @@ def test_r2_overlay_adds_independent_query_and_semantic_controls() -> None:
     assert "renderCUDA<NUM_CHANNELS, false, true>" in raster
     assert "else if (lane == leader)" not in voxel
     assert "const float peer9 = __shfl_sync" in voxel
-    assert "GALA_QUERY_WARP_REDUCE" in raster
-    assert "GALA_SEMANTIC_WARP_REDUCE" in voxel
-    assert "GALA_SEMANTIC_WARP_REDUCE" in raster
+    assert "COVER_QUERY_WARP_REDUCE" in raster
+    assert "COVER_SEMANTIC_WARP_REDUCE" in voxel
+    assert "COVER_SEMANTIC_WARP_REDUCE" in raster
     assert "renderCUDA<NUM_CHANNELS, false>" in voxel
     assert len(raster_transforms) == 5
     assert len(voxel_transforms) == 4
@@ -98,11 +98,11 @@ def test_prepare_r2_overlay_records_both_generated_files(tmp_path: Path) -> None
     output = prepare_overlay(tmp_path / "source", tmp_path / "output")
 
     manifest = json.loads(
-        (output / "gala-overlay-manifest.json").read_text(encoding="utf-8")
+        (output / "cover-overlay-manifest.json").read_text(encoding="utf-8")
     )
     assert set(manifest["files"]) == {"raster", "voxel"}
     assert manifest["hash_policy"] == "record_only_no_hash_rejection"
     assert manifest["environment_controls"] == {
-        "query": "GALA_QUERY_WARP_REDUCE",
-        "semantic": "GALA_SEMANTIC_WARP_REDUCE",
+        "query": "COVER_QUERY_WARP_REDUCE",
+        "semantic": "COVER_SEMANTIC_WARP_REDUCE",
     }

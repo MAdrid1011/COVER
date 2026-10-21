@@ -2,7 +2,7 @@
 
 ## Evaluation Boundary
 
-GALA Simulator evaluates reconstruction quality and execution performance. It
+COVER Simulator evaluates reconstruction quality and execution performance. It
 models the complete forward, reduction, consumer, adjoint, optimizer, and
 Gaussian-set mutation path. Shortening training, replacing inputs, reducing the
 relation set, or omitting backward or update work changes the workload and is
@@ -21,7 +21,7 @@ and D requires B.
 
 The canonical configurations are `0000`, `1000`, `1010`, `0100`, `0101`,
 `1100`, and `1111`. Other bit patterns are rejected by the public runner. The
-full GALA entry point and `1111` must produce identical cycle counts.
+full COVER entry point and `1111` must produce identical cycle counts.
 
 ## Architecture Boundary
 

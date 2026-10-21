@@ -1,4 +1,4 @@
-schema_version: gala-model-source-v1
+schema_version: cover-model-source-v1
 id: gr_gaussian
 name: GR-Gaussian
 implementation: independent_reimplementation
@@ -10,7 +10,7 @@ official_commands:
   train:
     - "{python_executable}"
     - -m
-    - gala_sim.adapters.gr_gaussian
+    - cover_sim.adapters.gr_gaussian
     - --dataset
     - "{dataset_root}"
     - --output
@@ -18,7 +18,7 @@ official_commands:
   evaluate:
     - "{python_executable}"
     - -m
-    - gala_sim.adapters.gr_gaussian
+    - cover_sim.adapters.gr_gaussian
     - --evaluate
     - "{output_root}/gr_gaussian_state.npz"
 stage_boundaries:

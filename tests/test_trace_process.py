@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.adapters.trace_process import TraceProcessError, run_trace_process
-from gala_sim.tools.preflight import ComputeProcess, GpuSample
+from cover_sim.adapters.trace_process import TraceProcessError, run_trace_process
+from cover_sim.tools.preflight import ComputeProcess, GpuSample
 
 
 def _sample(
@@ -28,7 +28,7 @@ def test_trace_process_does_not_start_while_external_gpu_work_is_present(
         started = True
         raise AssertionError("trace process must not start")
 
-    monkeypatch.setattr("gala_sim.adapters.trace_process.subprocess.Popen", unexpected_popen)
+    monkeypatch.setattr("cover_sim.adapters.trace_process.subprocess.Popen", unexpected_popen)
     external = ComputeProcess("GPU-fixture", 42, "external", 1024)
     prepared = False
 
@@ -60,7 +60,7 @@ def test_trace_process_runs_environment_preflight_before_gpu_sampling(
         return _sample(processes=(external,))
 
     monkeypatch.setattr(
-        "gala_sim.adapters.trace_process.subprocess.Popen",
+        "cover_sim.adapters.trace_process.subprocess.Popen",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(
             AssertionError("trace process must not start")
         ),
@@ -78,7 +78,7 @@ def test_trace_process_does_not_sample_or_launch_after_environment_failure(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(
-        "gala_sim.adapters.trace_process.subprocess.Popen",
+        "cover_sim.adapters.trace_process.subprocess.Popen",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(
             AssertionError("trace process must not start")
         ),
@@ -112,7 +112,7 @@ def test_trace_process_requires_two_consecutive_idle_samples(
         prepared = True
 
     monkeypatch.setattr(
-        "gala_sim.adapters.trace_process.subprocess.Popen",
+        "cover_sim.adapters.trace_process.subprocess.Popen",
         lambda *_args, **_kwargs: (_ for _ in ()).throw(
             AssertionError("trace process must not start")
         ),
@@ -157,7 +157,7 @@ def test_trace_process_terminates_its_own_inactive_process(
             return self.returncode if self.returncode is not None else 0
 
     clock = Clock()
-    monkeypatch.setattr("gala_sim.adapters.trace_process.subprocess.Popen", Process)
+    monkeypatch.setattr("cover_sim.adapters.trace_process.subprocess.Popen", Process)
     with pytest.raises(TraceProcessError, match="watchdog_inactivity_timeout"):
         run_trace_process(
             ("python", "train.py"), cwd=tmp_path, environment={},
@@ -198,7 +198,7 @@ def test_trace_process_stops_before_exhausting_gpu_memory_reserve(
             memory_used=15, memory_total=16,
         ),
     ))
-    monkeypatch.setattr("gala_sim.adapters.trace_process.subprocess.Popen", Process)
+    monkeypatch.setattr("cover_sim.adapters.trace_process.subprocess.Popen", Process)
 
     with pytest.raises(TraceProcessError, match="gpu_memory_reserve_exhausted"):
         run_trace_process(
@@ -237,7 +237,7 @@ def test_trace_process_stops_before_exhausting_host_memory_reserve(
         _sample(processes=(ComputeProcess("GPU-fixture", 4242, "train", 1),)),
     ))
     host_memory = iter((9, 7))
-    monkeypatch.setattr("gala_sim.adapters.trace_process.subprocess.Popen", Process)
+    monkeypatch.setattr("cover_sim.adapters.trace_process.subprocess.Popen", Process)
 
     with pytest.raises(TraceProcessError, match="host_memory_reserve_exhausted"):
         run_trace_process(
@@ -261,7 +261,7 @@ def test_trace_process_does_not_launch_below_initial_host_memory_reserve(
         started = True
         raise AssertionError("trace process must not start")
 
-    monkeypatch.setattr("gala_sim.adapters.trace_process.subprocess.Popen", unexpected_popen)
+    monkeypatch.setattr("cover_sim.adapters.trace_process.subprocess.Popen", unexpected_popen)
 
     with pytest.raises(TraceProcessError, match="host_memory_reserve_exhausted"):
         run_trace_process(

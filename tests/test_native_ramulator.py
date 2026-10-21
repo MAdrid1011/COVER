@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from gala_sim.timing.memory import MissingMemoryBackend, NativeRamulator2Binding
-from gala_sim.timing.memory.native import _inspect_configuration
+from cover_sim.timing.memory import MissingMemoryBackend, NativeRamulator2Binding
+from cover_sim.timing.memory.native import _inspect_configuration
 
 
 def _configuration(impl: str = "External") -> str:
@@ -52,7 +52,7 @@ def test_native_binding_records_hashes_without_verifying(
     ramulator.write_bytes(b"ramulator")
     manifest = tmp_path / "build.json"
     manifest.write_text(json.dumps({
-        "schema_version": "gala-ramulator2-bridge-build-v1",
+        "schema_version": "cover-ramulator2-bridge-build-v1",
         "bridge_library": str(bridge),
         "bridge_library_sha256": "0" * 64,
         "ramulator_library": str(ramulator),

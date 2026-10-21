@@ -5,7 +5,7 @@
 The simulator separates functional execution from cycle execution behind one
 event contract. The functional executor runs the real model and produces
 dynamic relations, primitive tasks, numerical results, and the final
-reconstruction. The cycle executor consumes the same events and simulates GALA.
+reconstruction. The cycle executor consumes the same events and simulates COVER.
 Both paths share event IDs, dependencies, state versions, and configuration
 identity.
 
@@ -40,7 +40,7 @@ reductions in that order.
 The initial package layout and responsibilities are:
 
 ```text
-gala_sim/
+cover_sim/
   cli/                 command entry points
   config/              typed configuration and validation
   adapters/            model and dataset adapters
@@ -107,13 +107,13 @@ contains at least:
 When a device buffer fills, a CUDA stream copies the completed chunk to pinned
 host memory. The CPU consumes the preceding chunk while the GPU produces the
 next. The columnar NumPy or Arrow IPC format is frozen by field type as
-`gala-clamp-events-v2`. `UPDATE_BEGIN` and `UPDATE_END` enclose an optimizer
+`cover-clamp-events-v2`. `UPDATE_BEGIN` and `UPDATE_END` enclose an optimizer
 commit or set mutation. `UPDATE_END.field_mask == 0` is a no-op version barrier:
 it closes the old version and advances state without a zero-mask write. Per-event
 JSON output and per-event Python callbacks are prohibited.
 
 For dense R²-Gaussian raster and voxel queries, the producer may also emit
-`gala-trace-virtual-packet-v1` work buffers containing the official CUDA
+`cover-trace-virtual-packet-v1` work buffers containing the official CUDA
 `point_list`, `point_key`, and complete `uint32` valid masks. A set bit denotes
 a real Gaussian/query relation. `VirtualTracePacket` is a producer-side work
 package, not a cycle trace and not a substitute for lifecycle validation.
@@ -158,7 +158,7 @@ Most optimizations change event start cycles without changing numerical output.
 Because reduction submission order can affect FP32 rounding, the cycle executor
 records query reduction, Gaussian gradient reduction, and update order. The
 functional executor performs deterministic replay from that log and produces
-the full GALA quality result.
+the full COVER quality result.
 
 Debug mode permits per-event comparison on a short real sample. Formal mode
 stores submission order, module statistics, and optional sampled traces without
@@ -168,7 +168,7 @@ retaining every numerical payload.
 
 | Mode | Purpose | Allowed simplification |
 | --- | --- | --- |
-| `native-reference` | Run official CUDA and produce reference quality and end-to-end time | No GALA cycle simulation |
+| `native-reference` | Run official CUDA and produce reference quality and end-to-end time | No COVER cycle simulation |
 | `trace-capture` | Run real numerical work and produce complete events | Optional visualization and intermediate checkpoints may be disabled |
 | `cycle-replay` | Run one or more variants from a validated trace | Does not repeat GPU numerical execution |
 | `functional-replay` | Replay reductions in selected cycle order and produce quality output | Does not recapture events |

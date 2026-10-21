@@ -1,4 +1,4 @@
-schema_version: gala-gpu-profiling-campaign-v1
+schema_version: cover-gpu-profiling-campaign-v1
 training_campaign: configs/campaigns/r2_gaussian_chest.yaml
 calibration_config: configs/profiling/r2_gaussian_gpu.yaml
 cuda_event_iteration_ranges: ["1:30000"]

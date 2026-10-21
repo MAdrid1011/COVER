@@ -5,10 +5,10 @@ import json
 
 import numpy as np
 
-from gala_sim.clamp.events import PrimitiveKind
-from gala_sim.cli import main
-from gala_sim.timing import RelationPacketPlan
-from gala_sim.trace import (
+from cover_sim.clamp.events import PrimitiveKind
+from cover_sim.cli import main
+from cover_sim.timing import RelationPacketPlan
+from cover_sim.trace import (
     CapturedPacketSpec,
     captured_virtual_packet,
     complete_captured_packet_sample,
@@ -129,7 +129,7 @@ def test_cli_builds_captured_packet_sample(
     candidates, relations = _write_records(tmp_path)
     manifest = tmp_path / "packets.json"
     manifest.write_text(json.dumps({
-        "schema_version": "gala-captured-packet-sample-v1",
+        "schema_version": "cover-captured-packet-sample-v1",
         "packets": [{
             "candidate_records": str(candidates),
             "relation_records": str(relations),

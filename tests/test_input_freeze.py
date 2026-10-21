@@ -9,9 +9,9 @@ import sys
 import numpy as np
 import pytest
 
-from gala_sim.config import ConfigError, load_config, load_source_manifest
-from gala_sim.identity import sha256_tree
-from gala_sim.manifest import (build_freeze_record, dataset_record, training_record,
+from cover_sim.config import ConfigError, load_config, load_source_manifest
+from cover_sim.identity import sha256_tree
+from cover_sim.manifest import (build_freeze_record, dataset_record, training_record,
                                verify_freeze_record)
 
 
@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_architecture_config_is_hashable_and_frozen() -> None:
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     assert len(config.sha256) == 64
     assert config.parameter("clock.frequency")["value"] == 500000000
     assert config.ready
@@ -31,7 +31,7 @@ def test_architecture_config_is_hashable_and_frozen() -> None:
 def test_config_rejects_invalid_metadata(tmp_path: Path) -> None:
     path = tmp_path / "invalid.yaml"
     path.write_text(
-        "schema_version: gala-config-v1\nparameters:\n  x:\n"
+        "schema_version: cover-config-v1\nparameters:\n  x:\n"
         "    value: 3\n    unit: count\n    source: test\n    scope: test\n"
         "    status: frozen\n    allowed_range: [4, 2]\n",
         encoding="utf-8",
@@ -42,9 +42,9 @@ def test_config_rejects_invalid_metadata(tmp_path: Path) -> None:
 
 def test_source_manifests_are_strict() -> None:
     model = load_source_manifest(ROOT / "configs/models/r2_gaussian.yaml",
-                                 schema_version="gala-model-source-v1")
+                                 schema_version="cover-model-source-v1")
     dataset = load_source_manifest(ROOT / "configs/datasets/chest.yaml",
-                                   schema_version="gala-dataset-source-v1")
+                                   schema_version="cover-dataset-source-v1")
     assert model.require("commit") == "f2579bfddd9aac009cb797c8503bef8119bbd022"
     assert "meta_data.json" in dataset.require("required_files")
 
@@ -91,7 +91,7 @@ def test_freeze_record_hash_is_recorded_without_content_verification(
 ) -> None:
     dataset = dataset_record(None, "Chest", "https://data.example/chest", "https://license.example",
                              "fixture_not_downloaded")
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     source_root = tmp_path / "source"
     source_root.mkdir()
     license_path = source_root / "LICENSE.md"
@@ -102,7 +102,7 @@ def test_freeze_record_hash_is_recorded_without_content_verification(
         "upstream_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "license_path": str(license_path), "license_sha256": "b" * 64,
     }
-    from gala_sim.manifest import SourceRecord
+    from cover_sim.manifest import SourceRecord
     training = {
         "profile": {"random_state": {
             "python_random_seed": 0, "numpy_seed": 0, "torch_seed": 0,
@@ -110,7 +110,7 @@ def test_freeze_record_hash_is_recorded_without_content_verification(
         "command": {"argv": [str(Path(sys.executable).resolve())]},
     }
     record = build_freeze_record(config, SourceRecord(**source), dataset, training, 0, ROOT)
-    assert record["schema_version"] == "gala-input-freeze-v3"
+    assert record["schema_version"] == "cover-input-freeze-v3"
     assert record["quality"]["parameters"]["quality.lpips_network"]["value"] == "alex"
     verify_freeze_record(record)
     mismatched = replace(dataset, reference_volume={
@@ -126,11 +126,11 @@ def test_freeze_record_hash_is_recorded_without_content_verification(
 
 
 def test_training_profile_matches_locked_upstream(tmp_path: Path) -> None:
-    from gala_sim.workspace import WorkspacePaths
+    from cover_sim.workspace import WorkspacePaths
     source_root = WorkspacePaths.discover().upstream / "r2_gaussian"
     if not (source_root / ".git").exists():
         pytest.skip("external locked source checkout is not available")
-    from gala_sim.manifest import source_record
+    from cover_sim.manifest import source_record
     source = source_record(
         source_root, "R2-Gaussian", "https://github.com/Ruyi-Zha/r2_gaussian.git",
         "f2579bfddd9aac009cb797c8503bef8119bbd022",
@@ -157,8 +157,8 @@ def test_training_profile_matches_locked_upstream(tmp_path: Path) -> None:
 def test_freeze_record_rejects_seed_override(tmp_path: Path) -> None:
     dataset = dataset_record(None, "Chest", "https://data.example/chest", "https://license.example",
                              "fixture_not_downloaded")
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
-    from gala_sim.manifest import SourceRecord
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
+    from cover_sim.manifest import SourceRecord
     source_root = tmp_path / "source"
     source_root.mkdir()
     license_path = source_root / "LICENSE.md"
@@ -196,7 +196,7 @@ def test_freeze_command_records_generic_portable_campaign(tmp_path: Path) -> Non
     ], cwd=tmp_path, text=True, capture_output=True)
     assert result.returncode == 0, result.stderr
     record = json.loads(output.read_text(encoding="utf-8"))
-    assert record["schema_version"] == "gala-campaign-freeze-v1"
+    assert record["schema_version"] == "cover-campaign-freeze-v1"
     assert record["model"]["id"] == "gr_gaussian"
     assert record["dataset"]["id"] == "walnut"
     assert record["dataset"]["projection_count"] == 2

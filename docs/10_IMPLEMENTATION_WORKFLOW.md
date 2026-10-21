@@ -47,7 +47,7 @@ checks, and regenerate every affected variant.
 
 Execute `0000`, `1000`, `1010`, `0100`, `0101`, `1100`, and `1111` in that
 order. Validate mechanism prerequisites, identical mathematical event counts,
-quality limits, and exact equality between `1111` and the full GALA entry point.
+quality limits, and exact equality between `1111` and the full COVER entry point.
 
 ## Add Integrations
 
@@ -56,7 +56,7 @@ stage mapping, and fixtures. A dataset integration adds a source manifest,
 registered parser, normalization logic, and validation fixtures. Both use the
 same hardware configuration and output contracts.
 
-The continuation command `gala-sim campaign-ablation --remaining` selects the
+The continuation command `cover-sim campaign-ablation --remaining` selects the
 eleven combinations other than the calibrated R2-Gaussian/Chest reference.
 Each result records the `legacy-static-endpoints-v1` anchor table and a joint
 mechanism assessment, so a combined-path regression is visible in the output.

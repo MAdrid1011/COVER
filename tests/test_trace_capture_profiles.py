@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-from gala_sim.adapters import trace_capture
-from gala_sim.adapters.trace_capture import TraceSession, get_trace_hook_profile
+from cover_sim.adapters import trace_capture
+from cover_sim.adapters.trace_capture import TraceSession, get_trace_hook_profile
 
 
 def test_exact_profile_splits_projection_and_voxel_extensions() -> None:

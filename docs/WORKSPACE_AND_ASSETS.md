@@ -12,7 +12,7 @@ profiles, checkpoints, and generated results belong in the local workspace.
 The workspace root is selected in the following order:
 
 1. An explicit command-line `--workspace` path
-2. The `GALA_WORKSPACE` environment variable
+2. The `COVER_WORKSPACE` environment variable
 3. `<repository>/workspace`
 
 Repository discovery searches upward for both `pyproject.toml` and `configs/`,
@@ -68,7 +68,7 @@ published description. It is not represented as author-released source.
 
 ## Acquisition Rules
 
-`gala-sim acquire` downloads only URLs declared in the catalog. It uses a
+`cover-sim acquire` downloads only URLs declared in the catalog. It uses a
 partial file for resumable transfers, checks free space before a transfer,
 verifies the publisher checksum when present, and computes SHA-256 after the
 download completes. Git repositories are checked out in detached mode at the

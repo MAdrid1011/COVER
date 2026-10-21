@@ -6,8 +6,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.gpu_measurement import load_gpu_compiler_measurement
-from gala_sim.tools.exact_gs_training_probe import (
+from cover_sim.gpu_measurement import load_gpu_compiler_measurement
+from cover_sim.tools.exact_gs_training_probe import (
     COMPILER_VARIANTS,
     ExactTrainingProbeError,
     OVERLAY_TRANSFORMS,
@@ -17,7 +17,7 @@ from gala_sim.tools.exact_gs_training_probe import (
     run_matrix,
     summarize_matrix,
 )
-from gala_sim.gpu_coverage import GpuCoverageError, analyze_gpu_compiler_coverage
+from cover_sim.gpu_coverage import GpuCoverageError, analyze_gpu_compiler_coverage
 
 
 def _training_source() -> str:
@@ -135,7 +135,7 @@ def test_exact_matrix_rejects_changed_gradient() -> None:
 def test_exact_matrix_writes_campaign_measurement(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.exact_gs_training_probe as probe
+    import cover_sim.tools.exact_gs_training_probe as probe
 
     elapsed = {
         "gpu_base": 100.0,
@@ -218,7 +218,7 @@ def test_gpu_compiler_coverage_rejects_missing_or_overlapping_stage_time() -> No
 def test_exact_matrix_keeps_stage_profile_out_of_four_way_timing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import gala_sim.tools.exact_gs_training_probe as probe
+    import cover_sim.tools.exact_gs_training_probe as probe
 
     calls: list[tuple[str, bool]] = []
 

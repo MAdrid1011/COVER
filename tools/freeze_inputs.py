@@ -16,9 +16,9 @@ import sys
 # repository root explicitly so the command works without an editable install.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from gala_sim.config import ConfigError
-from gala_sim.manifest import build_campaign_freeze_record, write_freeze_record
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.config import ConfigError
+from cover_sim.manifest import build_campaign_freeze_record, write_freeze_record
+from cover_sim.workspace import WorkspacePaths
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -28,7 +28,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--repository", type=Path)
     parser.add_argument("--workspace", type=Path)
     parser.add_argument("--source-root", type=Path)
-    parser.add_argument("--config", default="configs/architecture/gala.yaml", type=Path)
+    parser.add_argument("--config", default="configs/architecture/cover.yaml", type=Path)
     parser.add_argument("--dataset-root", type=Path)
     parser.add_argument("--model-output", type=Path)
     parser.add_argument("--python-executable", type=Path)

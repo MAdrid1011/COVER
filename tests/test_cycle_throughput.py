@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from gala_sim.timing import CycleProgress
-from gala_sim.tools.cycle_throughput import (
+from cover_sim.timing import CycleProgress
+from cover_sim.tools.cycle_throughput import (
     ArchiveSpeedupMonitor, ThroughputConverged, ThroughputDiagnosticConfig,
     ThroughputMonitor,
     require_empty_diagnostic_output,

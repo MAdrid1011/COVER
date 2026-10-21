@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from gala_sim.tools.gpu_observation import (
+from cover_sim.tools.gpu_observation import (
     GpuObservationError,
     ensure_gpu_isolated,
     external_compute_processes,

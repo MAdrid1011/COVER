@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.clamp import (
+from cover_sim.clamp import (
     ChunkedTraceBuilder,
     FusionIssueScheduler,
     PrimitiveKind,
@@ -20,11 +20,11 @@ from gala_sim.clamp import (
     TraceEvent,
     UpdateBeginKind,
 )
-from gala_sim.adapters.trace_capture import FIELD_DENSITY
-from gala_sim.ablation import (
+from cover_sim.adapters.trace_capture import FIELD_DENSITY
+from cover_sim.ablation import (
     run_archive_matrix, run_archive_speedup_diagnostic, run_matrix,
 )
-from gala_sim.timing import (
+from cover_sim.timing import (
     BufferedVirtualCycleConsumer,
     CycleConfig,
     CycleConfigurationError,
@@ -32,21 +32,21 @@ from gala_sim.timing import (
     CycleProgress,
     ModuleTiming,
 )
-from gala_sim.timing.engine import (
+from cover_sim.timing.engine import (
     _BankedFusionSourceQueue,
     _DependencyIndex,
     _FusionPendingQueues,
     _ReadyCandidateQueue,
 )
-from gala_sim.timing.modules import OwnerGradientTracker
-from gala_sim.timing.memory import Ramulator2Backend, RecordedMemoryBackend
-from gala_sim.config import load_config
-from gala_sim.tools.cycle_throughput import ThroughputDiagnosticConfig
-from gala_sim.trace import (
+from cover_sim.timing.modules import OwnerGradientTracker
+from cover_sim.timing.memory import Ramulator2Backend, RecordedMemoryBackend
+from cover_sim.config import load_config
+from cover_sim.tools.cycle_throughput import ThroughputDiagnosticConfig
+from cover_sim.trace import (
     NumpyChunkSink, Trace, TraceReader, TraceWriter, TraceValidationError,
     validate_trace,
 )
-from gala_sim.trace import (
+from cover_sim.trace import (
     VirtualPacketArchiveReader,
     VirtualPacketArchiveWriter,
     VirtualEventPacket,
@@ -55,8 +55,8 @@ from gala_sim.trace import (
     VirtualQueryEventExpander,
     VirtualTracePacket,
 )
-from gala_sim.adapters.r2_gaussian import _push_trace_chunks
-from gala_sim.clamp.events import dependency_dtype, event_dtype
+from cover_sim.adapters.r2_gaussian import _push_trace_chunks
+from cover_sim.clamp.events import dependency_dtype, event_dtype
 
 
 class _Memory:
@@ -359,9 +359,9 @@ def test_archived_packet_replay_matches_live_buffered_cycle(
     writer.close_iteration(1)
     writer.finish()
 
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    live_config = CycleConfig.from_gala(load_config(config_path), _Memory())
-    archive_config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    live_config = CycleConfig.from_cover(load_config(config_path), _Memory())
+    archive_config = CycleConfig.from_cover(load_config(config_path), _Memory())
     live = BufferedVirtualCycleConsumer(
         CycleEngine(live_config, policy=policy).online_session(
             max_events=4, initial_gaussian_count=1,
@@ -396,8 +396,8 @@ def test_archive_ablation_runs_canonical_independent_variants(tmp_path: Path) ->
     writer.close_iteration(1)
     writer.finish()
     completed: list[str] = []
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    config = CycleConfig.from_cover(load_config(config_path), _Memory())
 
     runs = run_archive_matrix(
         archive_root, config, max_events=4,
@@ -428,8 +428,8 @@ def test_archive_speedup_diagnostic_stops_all_variants_at_common_boundary(
         ))
         writer.close_iteration(iteration)
     writer.finish()
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    config = CycleConfig.from_cover(load_config(config_path), _Memory())
     diagnostic = ThroughputDiagnosticConfig(
         report_interval_events=1,
         report_interval_seconds=1,
@@ -451,7 +451,7 @@ def test_archive_speedup_diagnostic_stops_all_variants_at_common_boundary(
     assert set(report["variant_results"]) == {
         "0000", "1000", "1010", "0100", "0101", "1100", "1111",
     }
-    assert report["schema_version"] == "gala-archive-cycle-ratio-diagnostic-v2"
+    assert report["schema_version"] == "cover-archive-cycle-ratio-diagnostic-v2"
     assert {
         bits for bits, item in report["variant_results"].items()
         if item["speedup_vs_base_asic"] is not None
@@ -581,8 +581,8 @@ def test_online_streaming_waits_for_window_seal_before_declaring_deadlock() -> N
         ssim_radius=1,
         backward_confirmed=True,
     )
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    config = CycleConfig.from_cover(load_config(config_path), _Memory())
     session = CycleEngine(config).online_session(
         max_events=128,
         max_frontier_events=1024,
@@ -628,8 +628,8 @@ def test_online_streaming_reuses_schedule_for_capacity_preflight(
     monkeypatch.setattr(
         VirtualTracePacket, "relation_store_wavefront", unexpected_wavefront,
     )
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    config = CycleConfig.from_cover(load_config(config_path), _Memory())
     session = CycleEngine(config).online_session(
         max_events=64,
         max_frontier_events=256,
@@ -663,15 +663,15 @@ def test_online_streaming_cycles_are_transport_chunk_invariant() -> None:
         backward_confirmed=True,
     )
     assert source.logical_expanded_event_count > 131_072
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    gala_config = load_config(config_path)
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    cover_config = load_config(config_path)
     results = []
     max_frontier_events = (
-        int(gala_config.value("trace.chunk_events"))
-        * int(gala_config.value("trace.max_inflight_chunks"))
+        int(cover_config.value("trace.chunk_events"))
+        * int(cover_config.value("trace.max_inflight_chunks"))
     )
     for max_events in (65_536, 131_072, 2_000_000):
-        config = CycleConfig.from_gala(gala_config, _Memory())
+        config = CycleConfig.from_cover(cover_config, _Memory())
         session = CycleEngine(config).online_session(
             max_events=max_events,
             max_frontier_events=max_frontier_events,
@@ -738,9 +738,9 @@ def test_online_query_packet_rejects_infeasible_relation_store_wavefront() -> No
         ssim_radius=1,
         backward_confirmed=True,
     )
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     config = replace(
-        CycleConfig.from_gala(load_config(config_path), _Memory()),
+        CycleConfig.from_cover(load_config(config_path), _Memory()),
         query_relation_store_records=3,
         resource_envelope=None,
         resource_usage=None,
@@ -762,9 +762,9 @@ def test_online_query_packet_rejects_infeasible_relation_store_wavefront() -> No
 
 
 def test_query_reduction_banks_serialize_same_bank_and_parallelize_distinct_banks() -> None:
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
     engine = CycleEngine(
-        CycleConfig.from_gala(load_config(config_path), _Memory()),
+        CycleConfig.from_cover(load_config(config_path), _Memory()),
         policy="variant:1010",
     )
     rows = np.empty(3, dtype=event_dtype())
@@ -1253,7 +1253,7 @@ def test_sink_handoff_rebases_chunk_offsets() -> None:
     sink = NumpyChunkSink(chunk_events=2, max_inflight_chunks=2)
     _push_trace_chunks(_trace(), sink)
     events, dependencies, payload = sink.collect()
-    from gala_sim.trace.model import Trace
+    from cover_sim.trace.model import Trace
 
     handed_off = Trace(events, dependencies, payload, _trace().metadata)
     assert validate_trace(handed_off).event_count == 4
@@ -1266,14 +1266,14 @@ def test_trace_rejects_forward_dependency() -> None:
     broken[1]["dependency_count"] = 1
     dependencies = trace.dependencies.copy()
     dependencies[0] = 2
-    from gala_sim.trace.model import Trace
+    from cover_sim.trace.model import Trace
     with pytest.raises(TraceValidationError, match="prior event"):
         validate_trace(Trace(broken, dependencies, trace.payload, trace.metadata))
 
 
 def test_trace_schema_rejects_object_arrays() -> None:
     trace = _trace()
-    from gala_sim.trace.model import Trace
+    from cover_sim.trace.model import Trace
     with pytest.raises(ValueError, match="frozen schema"):
         Trace(trace.events.astype(object), trace.dependencies, trace.payload, trace.metadata)
 
@@ -2067,9 +2067,9 @@ def test_semantic_residency_groups_ready_adjoint_state() -> None:
 
 
 def test_semantic_ready_group_priority_selects_ready_leader_in_joint_variant() -> None:
-    config = CycleConfig.from_gala(
+    config = CycleConfig.from_cover(
         load_config(
-            Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+            Path(__file__).parents[1] / "configs/architecture/cover.yaml"
         ),
         _Memory(),
     )
@@ -2396,9 +2396,9 @@ def test_fusion_issue_banks_by_physical_query_state_index() -> None:
 
 
 def test_relation_constructor_separates_append_banks_and_dynamic_support_lanes() -> None:
-    config = CycleConfig.from_gala(
+    config = CycleConfig.from_cover(
         load_config(
-            Path(__file__).parents[1] / "configs/architecture/gala.yaml"
+            Path(__file__).parents[1] / "configs/architecture/cover.yaml"
         ),
         _Memory(),
     )
@@ -2631,10 +2631,10 @@ def test_offline_query_packet_boundary_releases_iterations_in_order() -> None:
         np.concatenate(dependency_parts),
         np.empty(0, dtype=np.dtype("<f4")),
         {
-            "schema_version": "gala-clamp-events-v2",
+            "schema_version": "cover-clamp-events-v2",
             "initial_gaussian_count": 1,
             "trace_sample": {
-                "schema_version": "gala-query-packet-sample-v1",
+                "schema_version": "cover-query-packet-sample-v1",
                 "result_scope": "quick_cycle_validation",
                 "formal_performance_eligible": False,
                 "quality_eligible": False,
@@ -2646,8 +2646,8 @@ def test_offline_query_packet_boundary_releases_iterations_in_order() -> None:
         },
     )
 
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    config = CycleConfig.from_cover(load_config(config_path), _Memory())
     result = CycleEngine(config, policy="variant:1000").run(trace)
 
     assert result.event_counts["GRADIENT_REDUCTION"] == 2
@@ -2720,8 +2720,8 @@ def test_joint_compiler_keeps_query_priority_over_semantic_cache_order() -> None
 
 
 def test_hardware_mechanisms_require_compiler_metadata_without_changing_resources() -> None:
-    config_path = Path(__file__).parents[1] / "configs/architecture/gala.yaml"
-    config = CycleConfig.from_gala(load_config(config_path), _Memory())
+    config_path = Path(__file__).parents[1] / "configs/architecture/cover.yaml"
+    config = CycleConfig.from_cover(load_config(config_path), _Memory())
     base = CycleEngine(config, policy="variant:0000")
     query_compiler_only = CycleEngine(config, policy="variant:1000")
     query_hardware = CycleEngine(config, policy="variant:1010")
@@ -2936,8 +2936,8 @@ def test_consumer_credit_owner_is_last_query_dependency_not_last_generic_depende
 
 
 def test_loaded_architecture_uses_three_independent_144_entry_candidate_fifos() -> None:
-    config = load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml")
-    cycle_config = CycleConfig.from_gala(config, _Memory())
+    config = load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml")
+    cycle_config = CycleConfig.from_cover(config, _Memory())
 
     assert cycle_config.candidate_fifo_entries == 144
     assert cycle_config.query_candidate_fifo_entries == 384
@@ -3007,13 +3007,13 @@ def test_cycle_replay_is_deterministic_and_compresses_stall_counts() -> None:
 
 
 def test_production_cycle_config_uses_frozen_parameters() -> None:
-    config = load_config(Path(__file__).parents[1] / "configs/architecture/gala.yaml")
-    cycle_config = CycleConfig.from_gala(config, _Memory())
+    config = load_config(Path(__file__).parents[1] / "configs/architecture/cover.yaml")
+    cycle_config = CycleConfig.from_cover(config, _Memory())
     assert cycle_config.relation_seed_fifo_entries == 256
 
 
 def test_ablation_runner_uses_one_validation_for_all_variants(monkeypatch) -> None:
-    import gala_sim.ablation.runner as runner
+    import cover_sim.ablation.runner as runner
 
     validation_calls = 0
     original_validate = runner.validate_trace
@@ -3034,7 +3034,7 @@ def test_ablation_runner_uses_one_validation_for_all_variants(monkeypatch) -> No
 
 
 def test_ablation_runner_reports_each_completed_variant() -> None:
-    from gala_sim.ablation.runner import run_matrix
+    from cover_sim.ablation.runner import run_matrix
 
     completed: list[str] = []
     runs = run_matrix(_trace(), _config(), progress=lambda run: completed.append(run.variant.bits))
@@ -3043,7 +3043,7 @@ def test_ablation_runner_reports_each_completed_variant() -> None:
 
 
 def test_cycle_progress_reports_complete_iterations_without_duplicate_final_sample() -> None:
-    from gala_sim.timing import CycleProgress
+    from cover_sim.timing import CycleProgress
 
     samples: list[CycleProgress] = []
     result = CycleEngine(_config()).run(
@@ -3102,7 +3102,7 @@ def test_cycle_progress_uses_contiguous_iteration_prefix() -> None:
 
 
 def test_ablation_runner_can_parallelize_independent_variants() -> None:
-    from gala_sim.ablation.runner import run_matrix
+    from cover_sim.ablation.runner import run_matrix
 
     runs = run_matrix(_trace(), _config(), parallel_workers=2)
     assert [run.variant.bits for run in runs] == [

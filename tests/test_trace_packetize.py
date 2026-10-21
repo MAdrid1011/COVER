@@ -4,15 +4,15 @@ import numpy as np
 import pytest
 from pathlib import Path
 
-from gala_sim.clamp.events import (
+from cover_sim.clamp.events import (
     PrimitiveKind,
     decode_relation_packet_flags,
     dependency_dtype,
     event_dtype,
 )
-from gala_sim.timing import RelationPacketPlan, RelationPacketPlanError
-from gala_sim.cli import main
-from gala_sim.trace import (
+from cover_sim.timing import RelationPacketPlan, RelationPacketPlanError
+from cover_sim.cli import main
+from cover_sim.trace import (
     QueryDomain,
     Trace,
     TraceReader,
@@ -65,7 +65,7 @@ def _legacy_quick_trace(*, partial_backward: bool = False) -> Trace:
         np.asarray(dependencies, dtype=dependency_dtype()),
         np.empty(0, dtype=np.dtype("<f4")),
         {
-            "schema_version": "gala-clamp-events-v2",
+            "schema_version": "cover-clamp-events-v2",
             "trace_sample": {
                 "result_scope": "quick_cycle_validation",
                 "formal_performance_eligible": False,
@@ -154,7 +154,7 @@ def test_packet_derivation_rejects_formal_trace() -> None:
         source.events,
         source.dependencies,
         source.payload,
-        {"schema_version": "gala-clamp-events-v2"},
+        {"schema_version": "cover-clamp-events-v2"},
     )
 
     with pytest.raises(ValueError, match="restricted to sampled quick traces"):

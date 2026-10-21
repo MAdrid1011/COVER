@@ -3,10 +3,10 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gala_sim.timing.kernel import (
+from cover_sim.timing.kernel import (
     iter_packed_relation_packet_batches, packed_tile_statistics,
 )
-from gala_sim.trace.virtual import (
+from cover_sim.trace.virtual import (
     RASTER_TEMPLATE_ID,
     VOXEL_TEMPLATE_ID,
     VirtualInterleavedQueryEventExpander,

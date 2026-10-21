@@ -33,7 +33,7 @@ not overwrite raw downloads.
 ## Performance Contract
 
 Every hardware result reports absolute end-to-end cycles. Time conversion uses
-the configured GALA clock. Compiler-only speedup uses measured end-to-end GPU
+the configured COVER clock. Compiler-only speedup uses measured end-to-end GPU
 time for the same model, dataset, training configuration, and input state.
 Hardware speedup uses Base ASIC cycles from the same trace.
 

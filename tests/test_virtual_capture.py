@@ -7,10 +7,10 @@ import time
 import numpy as np
 import pytest
 
-import gala_sim.trace.archive as archive_module
-from gala_sim.adapters.trace_capture import LOSS_L1, STATE_FIELD_MASK, TraceSession
-from gala_sim.adapters.virtual_capture import VirtualCaptureConsumer
-from gala_sim.trace import (
+import cover_sim.trace.archive as archive_module
+from cover_sim.adapters.trace_capture import LOSS_L1, STATE_FIELD_MASK, TraceSession
+from cover_sim.adapters.virtual_capture import VirtualCaptureConsumer
+from cover_sim.trace import (
     VirtualPacketArchiveReader,
     VirtualPacketArchiveWriter,
     VirtualLifecycleKind,
@@ -18,7 +18,7 @@ from gala_sim.trace import (
     VirtualTracePacket,
     snapshot_live_archive_prefix,
 )
-from gala_sim.tools.relation_capacity import run_relation_capacity_preflight
+from cover_sim.tools.relation_capacity import run_relation_capacity_preflight
 
 
 class _ArrayRef:

@@ -1,11 +1,11 @@
-# GALA Hardware Contract
+# COVER Hardware Contract
 
 ## Resource Envelope
 
 The modeled accelerator contains four Pods, 20 compute clusters, 320 FP32 FMA
 lanes, 40 transcendental lanes, eight external memory channels, and 2.75 MiB of
-shared SRAM. `configs/architecture/gala.yaml` and
-`configs/architecture/gala-resource-usage.json` are the machine-readable
+shared SRAM. `configs/architecture/cover.yaml` and
+`configs/architecture/cover-resource-usage.json` are the machine-readable
 resource definitions.
 
 All variants share the same top-level resources. Enabling a compiler or

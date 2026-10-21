@@ -6,15 +6,15 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from gala_sim.campaign import _trace_for_campaign, prepared_dataset, run_campaign
-from gala_sim.gpu_measurement import (
+from cover_sim.campaign import _trace_for_campaign, prepared_dataset, run_campaign
+from cover_sim.gpu_measurement import (
     GPU_COMPILER_VARIANTS,
     GpuMeasurementError,
     build_gpu_compiler_measurement,
     default_gpu_measurement_path,
     load_gpu_compiler_measurement,
 )
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.workspace import WorkspacePaths
 
 
 def _document() -> dict:
@@ -139,7 +139,7 @@ def test_gpu_measurement_rejects_noncomparable_evidence(
 def test_official_campaign_ingests_only_uninstrumented_gpu_measurement(
     tmp_path: Path, monkeypatch,
 ) -> None:
-    import gala_sim.campaign as campaign
+    import cover_sim.campaign as campaign
 
     repository = Path(__file__).resolve().parents[1]
     paths = WorkspacePaths.discover(
@@ -199,7 +199,7 @@ def test_official_campaign_ingests_only_uninstrumented_gpu_measurement(
 def test_explicit_gpu_measurement_root_requires_every_selected_artifact(
     tmp_path: Path, monkeypatch,
 ) -> None:
-    import gala_sim.campaign as campaign
+    import cover_sim.campaign as campaign
 
     repository = Path(__file__).resolve().parents[1]
     paths = WorkspacePaths.discover(

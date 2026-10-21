@@ -38,7 +38,7 @@ def _public_files() -> list[Path]:
 
 def test_public_tree_has_no_machine_paths_or_non_english_text() -> None:
     forbidden = (
-        "/" + "home/", "/" + "tmp/", "GALA" + "-runtime",
+        "/" + "home/", "/" + "tmp/", "COVER" + "-runtime",
         "IMPLEMENTATION" + "_STATUS", "11_" + "EXPERIMENT_RECORDS",
     )
     for path in _public_files():

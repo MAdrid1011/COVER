@@ -9,29 +9,29 @@ import sqlite3
 
 import pytest
 
-from gala_sim.adapters.stage_profile import (
+from cover_sim.adapters.stage_profile import (
     GpuStageProfileSession,
     IterationRange,
     parse_iteration_range,
 )
-from gala_sim.tools.gpu_calibration import CalibrationConfig
-from gala_sim.tools.gpu_profile_artifacts import (
+from cover_sim.tools.gpu_calibration import CalibrationConfig
+from cover_sim.tools.gpu_profile_artifacts import (
     bind_ncu_profile_to_plan, parse_ncu_csv, parse_nsys_sqlite,
 )
-from gala_sim.tools.gpu_profile_artifacts import classify_sass_csv
-from gala_sim.tools.gpu_profile_campaign import GpuProfileCampaign
-from gala_sim.tools.gpu_ncu_plan import (
+from cover_sim.tools.gpu_profile_artifacts import classify_sass_csv
+from cover_sim.tools.gpu_profile_campaign import GpuProfileCampaign
+from cover_sim.tools.gpu_ncu_plan import (
     NcuPlanConfig, _regex_alternation, build_ncu_plan, main as ncu_plan_main,
     validate_ncu_measurement,
 )
-from gala_sim.tools.gpu_ncu_runner import (
+from cover_sim.tools.gpu_ncu_runner import (
     _capture_job, _load_plan, _run_and_sample, _runner_command,
     _sample_has_job_gpu_activity, _sample_summary,
 )
-from gala_sim.tools.preflight import GpuSample
-from gala_sim.adapters.stage_runner import _frozen_profile_identity, _profile_selection
-from gala_sim.tools.gpu_normalization import normalize_stage_profiles
-from gala_sim.tools.gpu_ncu_sampling import build_sampled_performance
+from cover_sim.tools.preflight import GpuSample
+from cover_sim.adapters.stage_runner import _frozen_profile_identity, _profile_selection
+from cover_sim.tools.gpu_normalization import normalize_stage_profiles
+from cover_sim.tools.gpu_ncu_sampling import build_sampled_performance
 
 
 class _FakeCudaRuntime:
@@ -469,7 +469,7 @@ def test_ncu_runner_watchdog_terminates_only_the_spawned_process_group(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner.sample_gpustat",
+        "cover_sim.tools.gpu_ncu_runner.sample_gpustat",
         lambda: GpuSample(0.0, 0.0, 0, None, None, None, None),
     )
     returncode, _, _, watchdog = _run_and_sample(
@@ -490,7 +490,7 @@ def test_ncu_runner_watchdog_ignores_unrelated_gpu_activity(
         "compute_processes": [{"pid": 123}, {"pid": 456}],
     }
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner.os.getpgid",
+        "cover_sim.tools.gpu_ncu_runner.os.getpgid",
         lambda pid: {123: 10, 456: 20}[pid],
     )
     assert _sample_has_job_gpu_activity(sample, 20) is True
@@ -518,9 +518,9 @@ def test_ncu_runner_preflight_uses_all_available_launches_for_sparse_job(
         if launch["iteration"] == 1 and launch["kernel_name"] == first_name
     ][:2]
     sparse_job = {**job, "expected_launches": first_launches}
-    monkeypatch.setattr("gala_sim.tools.gpu_ncu_runner.shutil.which", lambda _: "/usr/bin/ncu")
+    monkeypatch.setattr("cover_sim.tools.gpu_ncu_runner.shutil.which", lambda _: "/usr/bin/ncu")
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner._freeze_command",
+        "cover_sim.tools.gpu_ncu_runner._freeze_command",
         lambda *_: (["/usr/bin/python", "train.py", "-s", "data", "-m", "model"], tmp_path),
     )
     command, _, _, selection = _runner_command(
@@ -567,10 +567,10 @@ def test_ncu_runner_preflight_reuses_iteration_one_kernel_for_later_shard(
         "ncu": {"preflight_profile_launch_count": 16},
     }
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner.shutil.which", lambda _: "/usr/bin/ncu"
+        "cover_sim.tools.gpu_ncu_runner.shutil.which", lambda _: "/usr/bin/ncu"
     )
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner._freeze_command",
+        "cover_sim.tools.gpu_ncu_runner._freeze_command",
         lambda *_: (["/usr/bin/python", "train.py", "-s", "data", "-m", "model"], tmp_path),
     )
     command, _, _, selection = _runner_command(
@@ -600,7 +600,7 @@ def test_ncu_runner_requires_clean_matching_implementation(
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner.subprocess.check_output",
+        "cover_sim.tools.gpu_ncu_runner.subprocess.check_output",
         lambda command, text: "",
     )
     assert _load_plan(plan_path)["content_sha256"] == plan["content_sha256"]
@@ -610,7 +610,7 @@ def test_ncu_runner_requires_clean_matching_implementation(
     hashless_path.write_text(json.dumps(hashless_plan), encoding="utf-8")
     assert "content_sha256" not in _load_plan(hashless_path)
     monkeypatch.setattr(
-        "gala_sim.tools.gpu_ncu_runner.subprocess.check_output",
+        "cover_sim.tools.gpu_ncu_runner.subprocess.check_output",
         lambda command, text: " M docs/status.md\n",
     )
     with pytest.raises(ValueError, match="clean profiling implementation"):
@@ -1004,10 +1004,10 @@ def test_frozen_profile_identity_allows_only_model_output_change(
             "working_directory": str(working), "sha256": "d" * 64,
         }},
     }
-    monkeypatch.setattr("gala_sim.adapters.stage_runner.verify_freeze_record", lambda value: None)
-    monkeypatch.setattr("gala_sim.adapters.stage_runner.json.loads", lambda value: freeze)
+    monkeypatch.setattr("cover_sim.adapters.stage_runner.verify_freeze_record", lambda value: None)
+    monkeypatch.setattr("cover_sim.adapters.stage_runner.json.loads", lambda value: freeze)
     monkeypatch.setattr(
-        "gala_sim.adapters.stage_runner.dataset_record",
+        "cover_sim.adapters.stage_runner.dataset_record",
         lambda *args: argparse.Namespace(manifest_sha256="c" * 64),
     )
     monkeypatch.chdir(working)
@@ -1045,12 +1045,12 @@ def test_nsys_stage_parser_maps_kernels_and_memcpy(tmp_path: Path) -> None:
     )
     connection.execute(
         "INSERT INTO NVTX_EVENTS VALUES(?,?,?)",
-        (100, 300, "gala_stage:backward:iteration=600:call=9"),
+        (100, 300, "cover_stage:backward:iteration=600:call=9"),
     )
     connection.execute(
         "INSERT INTO NVTX_EVENTS VALUES(?,?,?)",
         (
-            90, 310, "gala_iteration:training:iteration=600:call=1:campaign="
+            90, 310, "cover_iteration:training:iteration=600:call=1:campaign="
             + "a" * 64,
         ),
     )
@@ -1106,7 +1106,7 @@ def test_ncu_stage_parser_builds_counter_inputs(tmp_path: Path) -> None:
             writer.writerow({
                 "ID": "0",
                     range_column: (
-                        "gala_stage:projection_forward:iteration=600:call=1:campaign="
+                        "cover_stage:projection_forward:iteration=600:call=1:campaign="
                         + "a" * 64
                     ),
                     "Kernel Name": "exp_kernel",
@@ -1150,7 +1150,7 @@ def test_ncu_stage_parser_accepts_cross_thread_start_stop_ranges(
             writer.writerow({
                 "ID": "0",
                 range_column: (
-                    "0:<default domain>:gala_ncu_stage:backward:iteration=499:"
+                    "0:<default domain>:cover_ncu_stage:backward:iteration=499:"
                     "call=1084:campaign=" + "a" * 64
                 ),
                 "Kernel Name": "worker_kernel", "Block Size": "(32, 1, 1)",

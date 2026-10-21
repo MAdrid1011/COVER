@@ -1,4 +1,4 @@
-schema_version: gala-model-source-v1
+schema_version: cover-model-source-v1
 id: exact_gs
 name: Exact-GS
 implementation: upstream

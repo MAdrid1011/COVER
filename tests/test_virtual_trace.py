@@ -6,7 +6,7 @@ import time
 import numpy as np
 import pytest
 
-from gala_sim.trace import (
+from cover_sim.trace import (
     VirtualEventStreamValidator,
     VirtualQueryEventExpander,
     VirtualLifecycleKind,
@@ -18,22 +18,22 @@ from gala_sim.trace import (
     VirtualTraceStream,
     compare_virtual_packet_records,
 )
-from gala_sim.trace.virtual import (
+from cover_sim.trace.virtual import (
     LOSS_SSIM,
     LOSS_TV,
     VirtualInterleavedQueryEventExpander,
     _consumer_dependency_batch,
     _consumer_offsets,
 )
-from gala_sim.clamp.events import (
+from cover_sim.clamp.events import (
     EVENT_SCHEMA_VERSION,
     PrimitiveKind,
     decode_relation_packet_flags,
     dependency_dtype,
     event_dtype,
 )
-from gala_sim.trace import validate_trace
-from gala_sim.timing.packets import RelationPacketPlan
+from cover_sim.trace import validate_trace
+from cover_sim.timing.packets import RelationPacketPlan
 
 
 def _mask(candidate_count: int, words: int) -> np.ndarray:

@@ -1,4 +1,4 @@
-schema_version: gala-model-source-v1
+schema_version: cover-model-source-v1
 id: fact_gs
 name: FaCT-GS
 implementation: upstream

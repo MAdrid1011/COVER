@@ -1,4 +1,4 @@
-# GALA Simulator Documentation
+# COVER Simulator Documentation
 
 These documents define the simulator's architecture, input contracts, event
 semantics, reproducibility rules, and extension interfaces. They describe the
@@ -8,7 +8,7 @@ kept outside version control.
 1. [Project Constraints and Mainline](00_CONSTRAINTS_AND_MAINLINE.md)
 2. [Reproduction Targets and Evidence](01_REPRODUCTION_TARGETS.md)
 3. [Simulator Software Architecture](02_SIMULATOR_ARCHITECTURE.md)
-4. [GALA Hardware Contract](03_HARDWARE_CONTRACT.md)
+4. [COVER Hardware Contract](03_HARDWARE_CONTRACT.md)
 5. [Parameter Registry](04_PARAMETER_REGISTRY.md)
 6. [Model Adapters and Datasets](05_MODELS_AND_DATASETS.md)
 7. [Cycle Model and Event Semantics](06_CYCLE_MODEL.md)

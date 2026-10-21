@@ -3,18 +3,18 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gala_sim.adapters.fact_buffer_decoder import (
+from cover_sim.adapters.fact_buffer_decoder import (
     decode_fact_raster_records,
     decode_fact_raster_virtual_packet,
     decode_fact_voxel_records,
     decode_fact_voxel_virtual_packet,
 )
-from gala_sim.adapters.trace_capture import (
+from cover_sim.adapters.trace_capture import (
     RASTER_TEMPLATE_ID,
     STATE_FIELD_MASK,
     VOXEL_TEMPLATE_ID,
 )
-from gala_sim.timing import CycleConfig, CycleEngine, ModuleTiming
+from cover_sim.timing import CycleConfig, CycleEngine, ModuleTiming
 
 
 torch = pytest.importorskip("torch")

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from gala_sim.campaign import (
+from cover_sim.campaign import (
     ALL_COMBINATIONS,
     REMAINING_COMBINATIONS,
     _campaign_result_root,
@@ -16,9 +16,9 @@ from gala_sim.campaign import (
     prepared_dataset,
     run_campaign,
 )
-from gala_sim.clamp import PrimitiveKind, TraceBuilder, TraceEvent, ResourceClass
-from gala_sim.trace import VirtualPacketArchiveReader, validate_trace
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.clamp import PrimitiveKind, TraceBuilder, TraceEvent, ResourceClass
+from cover_sim.trace import VirtualPacketArchiveReader, validate_trace
+from cover_sim.workspace import WorkspacePaths
 
 
 def _prepared_dataset(root: Path, dataset_id: str) -> None:
@@ -88,7 +88,7 @@ def test_prepared_dataset_selects_newest_complete_cache(tmp_path: Path) -> None:
 def test_official_campaign_capture_is_identity_bound_and_reusable(
     tmp_path: Path, monkeypatch,
 ) -> None:
-    import gala_sim.campaign as campaign
+    import cover_sim.campaign as campaign
 
     repository = Path(__file__).resolve().parents[1]
     workspace = WorkspacePaths.discover(
@@ -98,7 +98,7 @@ def test_official_campaign_capture_is_identity_bound_and_reusable(
         workspace.cache / "prepared" / "walnut" / "fixture", "walnut",
     )
     dataset = prepared_dataset(workspace, "walnut")
-    config = campaign.load_config(repository / "configs/architecture/gala.yaml")
+    config = campaign.load_config(repository / "configs/architecture/cover.yaml")
     builder = TraceBuilder()
     builder.emit(TraceEvent(primitive_kind=int(PrimitiveKind.RELATION_CANDIDATE)))
     source_trace = builder.finish(metadata={
@@ -273,7 +273,7 @@ def test_iteration_expansion_preserves_state_versions_and_cross_iteration_barrie
         reduction_key=begin,
     ), dependencies=[begin])
     trace = builder.finish(metadata={
-        "schema_version": "gala-clamp-events-v2",
+        "schema_version": "cover-clamp-events-v2",
         "initial_gaussian_count": 1,
     })
     expanded = _expand_trace_iterations(trace, 2)

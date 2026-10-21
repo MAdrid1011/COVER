@@ -7,12 +7,12 @@ import json
 
 import numpy as np
 
-from gala_sim.adapters import R2GaussianAdapter, get_model_adapter, model_descriptors, prepare_campaign
-from gala_sim.adapters.trace_capture import get_trace_hook_profile
-from gala_sim.clamp import PrimitiveKind, TraceBuilder, TraceEvent
-from gala_sim.config import load_config
-from gala_sim.trace import TraceWriter
-from gala_sim.workspace import WorkspacePaths
+from cover_sim.adapters import R2GaussianAdapter, get_model_adapter, model_descriptors, prepare_campaign
+from cover_sim.adapters.trace_capture import get_trace_hook_profile
+from cover_sim.clamp import PrimitiveKind, TraceBuilder, TraceEvent
+from cover_sim.config import load_config
+from cover_sim.trace import TraceWriter
+from cover_sim.workspace import WorkspacePaths
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +36,7 @@ def test_r2_adapter_reuses_official_entry_for_non_chest_dataset(tmp_path: Path) 
     dataset = tmp_path / "walnut"
     dataset.mkdir()
     run = adapter.prepare(SimpleNamespace(root=dataset, id="walnut"), load_config(
-        ROOT / "configs/architecture/gala.yaml"
+        ROOT / "configs/architecture/cover.yaml"
     ))
     assert run.dataset_name == "walnut"
     assert str(dataset.resolve()) in run.official_command
@@ -158,7 +158,7 @@ def test_campaign_builder_composes_all_registered_model_dataset_pairs(tmp_path: 
         "walnut": _exported_dataset(tmp_path / "walnut", reference=False),
         "hdtomo_usb": _exported_dataset(tmp_path / "hdtomo", reference=True),
     }
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     for model_id in model_descriptors():
         for dataset_id, dataset_root in datasets.items():
             run = prepare_campaign(
@@ -182,7 +182,7 @@ def test_campaign_output_roots_are_isolated_by_model_and_dataset(
         "walnut": _exported_dataset(tmp_path / "walnut", reference=False),
         "hdtomo_usb": _exported_dataset(tmp_path / "hdtomo", reference=True),
     }
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
 
     observed: set[Path] = set()
     for model_id in model_descriptors():
@@ -210,7 +210,7 @@ def test_exact_capture_runs_official_entry_with_model_specific_hooks(
     adapter = get_model_adapter(
         "exact_gs", workspace=workspace, output_root=output_root,
     )
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     run = adapter.prepare(SimpleNamespace(root=dataset_root, id="chest"), config)
     source_binding = next(
         value for value in run.official_command if value.startswith("--source_path=")
@@ -244,7 +244,7 @@ def test_exact_capture_runs_official_entry_with_model_specific_hooks(
         def close(self) -> None:
             self.closed = True
 
-    monkeypatch.setattr("gala_sim.adapters.registry.run_trace_process", fake_trace_process)
+    monkeypatch.setattr("cover_sim.adapters.registry.run_trace_process", fake_trace_process)
     sink = Sink()
     artifact = adapter.capture_trace(run, sink)
 
@@ -275,7 +275,7 @@ def test_exact_output_views_isolate_repeated_runs_for_one_dataset(tmp_path: Path
     workspace = WorkspacePaths.discover(repository=ROOT, workspace=tmp_path / "workspace")
     (workspace.upstream / "exact_gs").mkdir(parents=True)
     dataset_root = _chest_dataset(tmp_path / "chest")
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     outputs = (workspace.results / "first", workspace.results / "second")
 
     for output in outputs:
@@ -300,7 +300,7 @@ def test_fact_capture_runs_official_entry_with_split_pipeline_hooks(
     adapter = get_model_adapter(
         "fact_gs", workspace=workspace, output_root=output_root,
     )
-    config = load_config(ROOT / "configs/architecture/gala.yaml")
+    config = load_config(ROOT / "configs/architecture/cover.yaml")
     run = adapter.prepare(SimpleNamespace(root=dataset_root, id="chest"), config)
     assert "model.eval=true" in run.official_command
     assert "eval.eval_start=true" in run.official_command
@@ -332,7 +332,7 @@ def test_fact_capture_runs_official_entry_with_split_pipeline_hooks(
         def close(self) -> None:
             self.closed = True
 
-    monkeypatch.setattr("gala_sim.adapters.registry.run_trace_process", fake_trace_process)
+    monkeypatch.setattr("cover_sim.adapters.registry.run_trace_process", fake_trace_process)
     sink = Sink()
     artifact = adapter.capture_trace(run, sink)
 

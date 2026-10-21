@@ -299,8 +299,8 @@ wheels = [
 ]
 
 [[package]]
-name = "gala-simulator"
-version = "0.1.0"
+name = "cover-simulator"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
